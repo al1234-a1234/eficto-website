@@ -63,7 +63,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-eficto-gold/15 px-5 py-5 text-center text-xs text-eficto-cream/50 sm:px-8">
-        © {new Date().getFullYear()} إفيكتو — جميع الحقوق محفوظة
+        © {new Date().getFullYear()} افيكتو — جميع الحقوق محفوظة
       </div>
     </footer>
   );

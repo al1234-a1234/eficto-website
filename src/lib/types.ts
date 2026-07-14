@@ -45,6 +45,7 @@ export interface WaitlistEntry {
 
 export interface Review {
   id: string;
+  customer_id: string | null;
   customer_name: string | null;
   rating: number | null;
   comment: string | null;

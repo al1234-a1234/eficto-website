@@ -1,16 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Review } from "@/lib/types";
 
-export async function getReviews(limit = 20): Promise<Review[]> {
+export async function getCustomerReviews(customerId: string): Promise<Review[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("eficto_reviews")
     .select("*")
-    .order("review_date", { ascending: false })
-    .limit(limit);
+    .eq("customer_id", customerId)
+    .order("review_date", { ascending: false });
 
   if (error) {
-    console.error("getReviews", error.message);
+    console.error("getCustomerReviews", error.message);
     return [];
   }
   return data ?? [];

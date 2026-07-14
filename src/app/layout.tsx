@@ -30,9 +30,9 @@ const plexArabic = IBM_Plex_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: "إفيكتو | eficto — مطعم إيطالي في بريدة",
+  title: "افيكتو | eficto — مطعم إيطالي في بريدة",
   description:
-    "إفيكتو، مطعم إيطالي في بريدة يجمع بين الأقواس الخشبية والجلد الأخضر الغامق والإضاءة الدافئة. احجز طاولتك أو انضم لقائمة الانتظار اللحظية.",
+    "افيكتو، مطعم إيطالي في بريدة يجمع بين الأقواس الخشبية والجلد الأخضر الغامق والإضاءة الدافئة. احجز طاولتك أو انضم لقائمة الانتظار اللحظية.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

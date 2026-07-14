@@ -42,7 +42,7 @@ export function SiteHeader() {
             href={SITE.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="إنستقرام إفيكتو"
+            aria-label="إنستقرام افيكتو"
             className="text-eficto-cream/80 transition-colors hover:text-eficto-gold"
           >
             <InstagramIcon className="h-5 w-5" />
@@ -51,7 +51,7 @@ export function SiteHeader() {
             href={SITE.mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="موقع إفيكتو بخرائط قوقل"
+            aria-label="موقع افيكتو بخرائط قوقل"
             className="text-eficto-cream/80 transition-colors hover:text-eficto-gold"
           >
             <MapPinIcon className="h-5 w-5" />

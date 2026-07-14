@@ -57,8 +57,8 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
             src={wordmarkAr.src}
             width={wordmarkAr.width}
             height={wordmarkAr.height}
-            alt="إفيكتو"
-            className="mt-0.5 h-3 w-auto opacity-90"
+            alt="افيكتو"
+            className="mt-0.5 h-3 w-auto"
             unoptimized
           />
         )}

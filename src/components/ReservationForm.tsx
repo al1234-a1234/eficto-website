@@ -58,7 +58,7 @@ export function ReservationForm() {
       <div className="rounded-2xl border border-eficto-gold/40 bg-white/70 p-8 text-center shadow-soft">
         <p className="font-arabic-display text-2xl text-eficto-green">تم تأكيد حجزك</p>
         <p className="mt-3 text-eficto-green-dark/75">{formatArabicDateTime(confirmedTime)}</p>
-        <p className="mt-6 text-sm text-eficto-green-dark/60">نسعد باستقبالكم في إفيكتو</p>
+        <p className="mt-6 text-sm text-eficto-green-dark/60">نسعد باستقبالكم في افيكتو</p>
       </div>
     );
   }

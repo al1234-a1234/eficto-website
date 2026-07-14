@@ -9,7 +9,7 @@ export function Hero() {
     <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden">
       <PhotoBackground
         src={IMAGES.interiorArch}
-        alt="أجواء إفيكتو الداخلية"
+        alt="أجواء افيكتو الداخلية"
         className="absolute inset-0"
         dim
         priority
@@ -18,12 +18,12 @@ export function Hero() {
       <div className="section-fade relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center">
         <LogoMark className="h-16" />
 
-        <h1 className="mt-8 font-arabic-display text-4xl leading-[1.4] text-eficto-cream sm:text-5xl">
-          إفيكتو
-        </h1>
-        <p className="mt-2 font-serif text-lg tracking-[0.35em] text-eficto-gold sm:text-xl">
+        <p className="mt-8 font-serif text-lg tracking-[0.35em] text-eficto-gold sm:text-xl">
           EFICTO
         </p>
+        <h1 className="mt-2 font-arabic-display text-4xl leading-[1.4] text-eficto-cream sm:text-5xl">
+          افيكتو
+        </h1>
 
         <p className="mt-6 max-w-xl text-balance text-base leading-8 text-eficto-cream/80 sm:text-lg">
           مطعم إيطالي في قلب بريدة، حيث تلتقي الأقواس الخشبية بالجلد الأخضر الغامق والإضاءة

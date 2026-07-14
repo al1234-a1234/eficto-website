@@ -4,15 +4,15 @@ import { IMAGES } from "@/lib/assets";
 import { InstagramIcon, MapPinIcon, PhoneIcon, ClockIcon } from "@/components/icons";
 import { SITE } from "@/lib/constants";
 
-export const metadata: Metadata = { title: "تواصل معنا | إفيكتو" };
+export const metadata: Metadata = { title: "تواصل معنا | افيكتو" };
 
 export default function ContactPage() {
   return (
     <>
       <section className="relative flex h-[40vh] min-h-[280px] items-center justify-center overflow-hidden">
-        <PhotoBackground src={IMAGES.interiorBooth} alt="أجواء إفيكتو" className="absolute inset-0" dim />
+        <PhotoBackground src={IMAGES.interiorBooth} alt="أجواء افيكتو" className="absolute inset-0" dim />
         <div className="relative z-10 text-center">
-          <p className="font-arabic-body text-sm tracking-[0.2em] text-eficto-gold">إفيكتو</p>
+          <p className="font-arabic-body text-sm tracking-[0.2em] text-eficto-gold">افيكتو</p>
           <h1 className="mt-3 font-arabic-display text-4xl text-eficto-cream">تواصل معنا</h1>
         </div>
       </section>
@@ -67,7 +67,7 @@ export default function ContactPage() {
 
         <div className="mt-6 overflow-hidden rounded-2xl border border-eficto-gold/30">
           <iframe
-            title="موقع إفيكتو على الخريطة"
+            title="موقع افيكتو على الخريطة"
             src="https://maps.google.com/maps?q=Buraidah,Saudi%20Arabia&z=13&output=embed"
             className="h-80 w-full"
             loading="lazy"

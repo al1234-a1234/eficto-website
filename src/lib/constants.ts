@@ -1,5 +1,5 @@
 export const SITE = {
-  nameAr: "إفيكتو",
+  nameAr: "افيكتو",
   nameEn: "eficto",
   instagram: "https://www.instagram.com/eficto.sa",
   instagramHandle: "@eficto.sa",
@@ -13,9 +13,8 @@ export const SITE = {
 
 export const NAV_LINKS = [
   { href: "/", label: "الرئيسية" },
-  { href: "/menu", label: "المنيو" },
   { href: "/reserve", label: "الحجز" },
   { href: "/waitlist", label: "الانتظار" },
-  { href: "/reviews", label: "التقييمات" },
+  { href: "/reviews", label: "شاركنا تقييمك" },
   { href: "/contact", label: "تواصل معنا" },
 ];
