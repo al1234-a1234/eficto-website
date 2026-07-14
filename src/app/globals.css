@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #fbf6ec;
+  color: #132f21;
+}
+
+::selection {
+  background-color: #cba97d;
+  color: #132f21;
+}
+
+.section-fade {
+  animation: section-fade-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes section-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.arch-frame {
+  border-radius: 999px 999px 12px 12px;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
