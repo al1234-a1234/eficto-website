@@ -1,11 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { ReservationsManager } from "@/components/admin/ReservationsManager";
+import { LocationStatusToggle } from "@/components/admin/LocationStatusToggle";
 import type { ReservationWithRelations } from "@/lib/types";
 
 export default async function AdminReservationsPage() {
   const supabase = await createClient();
 
-  const [{ data: reservations }, { data: tables }] = await Promise.all([
+  const [{ data: reservations }, { data: tables }, { data: locationStatus }] = await Promise.all([
     supabase
       .from("eficto_reservations")
       .select(
@@ -14,6 +15,7 @@ export default async function AdminReservationsPage() {
       .order("reservation_time", { ascending: false })
       .limit(300),
     supabase.from("eficto_tables").select("*").order("table_number"),
+    supabase.from("eficto_location_status").select("location, is_full").order("location"),
   ]);
 
   return (
@@ -22,6 +24,12 @@ export default async function AdminReservationsPage() {
       <p className="mt-1 text-sm text-eficto-green-dark/60">إدارة، تأكيد وتعديل حجوزات العملاء</p>
 
       <div className="mt-6">
+        <LocationStatusToggle
+          initialStatus={(locationStatus ?? []) as { location: "indoor" | "outdoor"; is_full: boolean }[]}
+        />
+      </div>
+
+      <div className="mt-8">
         <ReservationsManager
           initialReservations={(reservations ?? []) as unknown as ReservationWithRelations[]}
           tables={tables ?? []}

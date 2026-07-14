@@ -13,6 +13,10 @@ export function isValidPartySize(size: number) {
   return Number.isInteger(size) && size >= 1 && size <= 20;
 }
 
+export function isValidLocation(location: unknown): location is "indoor" | "outdoor" {
+  return location === "indoor" || location === "outdoor";
+}
+
 /** Restaurant operates 5:00 PM – 2:30 AM Riyadh time. */
 export function isWithinOperatingHours(time: string) {
   const [h, m] = time.split(":").map(Number);

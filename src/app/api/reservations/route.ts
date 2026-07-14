@@ -1,13 +1,25 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { findAvailableTable, toRiyadhISOString, upsertCustomer } from "@/lib/reservationLogic";
-import { isValidPartySize, isValidSaudiPhone, isWithinOperatingHours, normalizePhone } from "@/lib/validate";
+import {
+  findAvailableTable,
+  getDailyReservationNumber,
+  isLocationFull,
+  toRiyadhISOString,
+  upsertCustomer,
+} from "@/lib/reservationLogic";
+import {
+  isValidLocation,
+  isValidPartySize,
+  isValidSaudiPhone,
+  isWithinOperatingHours,
+  normalizePhone,
+} from "@/lib/validate";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "بيانات غير صحيحة" }, { status: 400 });
 
-  const { full_name, phone, date, time, party_size } = body as Record<string, unknown>;
+  const { full_name, phone, date, time, party_size, location } = body as Record<string, unknown>;
 
   if (
     typeof full_name !== "string" ||
@@ -18,7 +30,8 @@ export async function POST(request: Request) {
     typeof time !== "string" ||
     !isWithinOperatingHours(time) ||
     typeof party_size !== "number" ||
-    !isValidPartySize(party_size)
+    !isValidPartySize(party_size) ||
+    !isValidLocation(location)
   ) {
     return NextResponse.json({ error: "الرجاء التحقق من بيانات الحجز" }, { status: 400 });
   }
@@ -30,7 +43,18 @@ export async function POST(request: Request) {
 
   try {
     const supabase = createAdminClient();
-    const table = await findAvailableTable(supabase, reservationTimeISO, party_size);
+
+    if (await isLocationFull(supabase, location)) {
+      return NextResponse.json(
+        {
+          error: location === "indoor" ? "الجلسة الداخلية ممتلئة حالياً" : "الجلسة الخارجية ممتلئة حالياً",
+          suggestWaitlist: true,
+        },
+        { status: 409 }
+      );
+    }
+
+    const table = await findAvailableTable(supabase, reservationTimeISO, party_size, location);
 
     if (!table) {
       return NextResponse.json(
@@ -50,12 +74,14 @@ export async function POST(request: Request) {
         party_size,
         status: "confirmed",
       })
-      .select("id, reservation_time, party_size, status")
+      .select("id, reservation_time, party_size, status, created_at")
       .single();
 
     if (error) throw error;
 
-    return NextResponse.json({ reservation, table }, { status: 201 });
+    const dailyNumber = await getDailyReservationNumber(supabase, reservation.created_at);
+
+    return NextResponse.json({ reservation, table, dailyNumber }, { status: 201 });
   } catch (err) {
     console.error("reservation creation failed", err);
     return NextResponse.json({ error: "تعذر إتمام الحجز، حاول مرة أخرى" }, { status: 500 });

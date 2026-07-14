@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatArabicDateTime } from "@/lib/format";
 
 type Status = "idle" | "submitting" | "success" | "error" | "full";
+type Location = "indoor" | "outdoor";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -14,6 +15,8 @@ export function ReservationForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState<string | null>(null);
   const [confirmedTime, setConfirmedTime] = useState<string | null>(null);
+  const [dailyNumber, setDailyNumber] = useState<number | null>(null);
+  const [location, setLocation] = useState<Location>("indoor");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,6 +30,7 @@ export function ReservationForm() {
       date: String(form.get("date") ?? ""),
       time: String(form.get("time") ?? ""),
       party_size: Number(form.get("party_size")),
+      location,
     };
 
     try {
@@ -40,6 +44,7 @@ export function ReservationForm() {
       if (res.status === 201) {
         setStatus("success");
         setConfirmedTime(data.reservation.reservation_time);
+        setDailyNumber(data.dailyNumber ?? null);
       } else if (res.status === 409) {
         setStatus("full");
         setMessage(data.error);
@@ -57,7 +62,13 @@ export function ReservationForm() {
     return (
       <div className="rounded-2xl border border-eficto-gold/40 bg-white/70 p-8 text-center shadow-soft">
         <p className="font-arabic-display text-2xl text-eficto-green">تم تأكيد حجزك</p>
+        {dailyNumber !== null && (
+          <p className="mt-2 font-arabic-display text-4xl text-eficto-gold-deep">رقم {dailyNumber}</p>
+        )}
         <p className="mt-3 text-eficto-green-dark/75">{formatArabicDateTime(confirmedTime)}</p>
+        <p className="mt-1 text-sm text-eficto-green-dark/60">
+          {location === "indoor" ? "جلسة داخلية" : "جلسة خارجية"}
+        </p>
         <p className="mt-6 text-sm text-eficto-green-dark/60">نسعد باستقبالكم في افيكتو</p>
       </div>
     );
@@ -86,6 +97,34 @@ export function ReservationForm() {
           pattern="^(?:\+966|0)5\d{8}$"
           className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 text-left outline-none transition-colors focus:border-eficto-gold"
         />
+      </div>
+
+      <div>
+        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">مكان الجلسة</label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setLocation("indoor")}
+            className={`rounded-xl border py-3 text-sm transition-colors ${
+              location === "indoor"
+                ? "border-eficto-green bg-eficto-green text-eficto-cream"
+                : "border-eficto-gold/40 bg-white/70 text-eficto-green-dark/80"
+            }`}
+          >
+            داخلي
+          </button>
+          <button
+            type="button"
+            onClick={() => setLocation("outdoor")}
+            className={`rounded-xl border py-3 text-sm transition-colors ${
+              location === "outdoor"
+                ? "border-eficto-green bg-eficto-green text-eficto-cream"
+                : "border-eficto-gold/40 bg-white/70 text-eficto-green-dark/80"
+            }`}
+          >
+            خارجي
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
