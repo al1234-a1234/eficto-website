@@ -5,20 +5,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Sampled directly from eficto's real logo files (public/logo/*) — not an approximation.
         eficto: {
           green: {
-            DEFAULT: "#1E4A34",
-            dark: "#132F21",
-            light: "#2C6B4B",
+            DEFAULT: "#235C31",
+            dark: "#17401F",
+            deep: "#102B17",
+            light: "#318145",
           },
           gold: {
-            DEFAULT: "#CBA97D",
-            light: "#E4D2B0",
-            dark: "#AB8A5E",
-            deep: "#7A5C36",
+            DEFAULT: "#D7B790",
+            light: "#E7D4BD",
+            dark: "#8C6738",
+            deep: "#79562C",
           },
-          cream: "#F3E9D7",
-          ivory: "#FBF6EC",
+          cream: "#F0E6D8",
+          ivory: "#F8F3EC",
           alert: "#9E3B34",
         },
       },

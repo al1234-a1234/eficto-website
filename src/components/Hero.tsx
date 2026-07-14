@@ -1,15 +1,21 @@
 import Link from "next/link";
-import { ArchScene } from "./ArchScene";
+import { PhotoBackground } from "./PhotoBackground";
 import { LogoMark } from "./Logo";
 import { LiveStatusBadge } from "./LiveStatusBadge";
 
 export function Hero() {
   return (
     <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden">
-      <ArchScene className="absolute inset-0" archCount={6} dim />
+      <PhotoBackground
+        src="/images/interior-arch.jpg"
+        alt="أجواء إفيكتو الداخلية"
+        className="absolute inset-0"
+        dim
+        priority
+      />
 
       <div className="section-fade relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center">
-        <LogoMark className="h-16 w-auto text-eficto-gold" />
+        <LogoMark className="h-16" />
 
         <h1 className="mt-8 font-arabic-display text-4xl leading-[1.4] text-eficto-cream sm:text-5xl">
           إفيكتو

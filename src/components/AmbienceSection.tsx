@@ -1,4 +1,4 @@
-import { ArchScene } from "./ArchScene";
+import Image from "next/image";
 
 const PILLARS = [
   { title: "الأقواس الخشبية", desc: "خطوط معمارية دافئة مستوحاة من العمارة الإيطالية الكلاسيكية." },
@@ -32,9 +32,33 @@ export function AmbienceSection() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <ArchScene className="col-span-2 h-56 rounded-2xl arch-frame" archCount={4} />
-          <ArchScene className="h-40 rounded-2xl arch-frame" archCount={2} />
-          <ArchScene className="h-40 rounded-2xl arch-frame" archCount={3} />
+          <div className="relative col-span-2 h-56 overflow-hidden rounded-2xl arch-frame">
+            <Image
+              src="/images/interior-arch.jpg"
+              alt="أجواء إفيكتو الداخلية"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="relative h-40 overflow-hidden rounded-2xl arch-frame">
+            <Image
+              src="/images/interior-booth.jpg"
+              alt="جلسات إفيكتو"
+              fill
+              sizes="(min-width: 768px) 25vw, 50vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="relative h-40 overflow-hidden rounded-2xl arch-frame">
+            <Image
+              src="/images/floor-logo.jpg"
+              alt="شعار إفيكتو عند المدخل"
+              fill
+              sizes="(min-width: 768px) 25vw, 50vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </div>
     </section>

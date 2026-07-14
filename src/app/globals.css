@@ -7,13 +7,13 @@ html {
 }
 
 body {
-  background-color: #fbf6ec;
-  color: #132f21;
+  background-color: #f8f3ec;
+  color: #17401f;
 }
 
 ::selection {
-  background-color: #cba97d;
-  color: #132f21;
+  background-color: #d7b790;
+  color: #17401f;
 }
 
 .section-fade {
@@ -37,4 +37,9 @@ body {
 
 .text-balance {
   text-wrap: balance;
+}
+
+.font-serif {
+  font-variation-settings: "SOFT" 100, "opsz" 24;
+  font-weight: 400;
 }

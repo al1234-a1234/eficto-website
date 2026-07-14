@@ -14,7 +14,7 @@ export function SiteFooter() {
     <footer className="border-t border-eficto-gold/25 bg-eficto-green-dark text-eficto-cream/90">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-3">
         <div>
-          <Logo markClassName="text-eficto-gold" wordmarkClassName="text-eficto-cream" />
+          <Logo />
           <p className="mt-4 max-w-xs text-sm leading-7 text-eficto-cream/70">
             تجربة إيطالية أصيلة وسط أقواس خشبية وجلد أخضر غامق وإضاءة دافئة، في قلب بريدة.
           </p>

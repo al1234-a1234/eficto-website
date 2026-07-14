@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Noto_Naskh_Arabic, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Fraunces, Aref_Ruqaa, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
-const playfair = Playfair_Display({
+// Soft, ball-terminal serif — the closest free match to the real "eficto" wordmark.
+const fraunces = Fraunces({
   subsets: ["latin"],
+  weight: "variable",
+  style: ["normal", "italic"],
+  axes: ["SOFT", "opsz"],
   variable: "--font-serif",
   display: "swap",
 });
 
-const notoNaskh = Noto_Naskh_Arabic({
+const arefRuqaa = Aref_Ruqaa({
   subsets: ["arabic"],
+  weight: ["400", "700"],
   variable: "--font-arabic-display",
   display: "swap",
 });
@@ -31,7 +36,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${playfair.variable} ${notoNaskh.variable} ${plexArabic.variable}`}>
+    <html lang="ar" dir="rtl" className={`${fraunces.variable} ${arefRuqaa.variable} ${plexArabic.variable}`}>
       <body className="font-arabic-body bg-eficto-ivory text-eficto-green-dark antialiased">
         <SiteHeader />
         <main>{children}</main>

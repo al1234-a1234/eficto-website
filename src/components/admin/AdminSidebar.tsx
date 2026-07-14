@@ -18,7 +18,7 @@ export function AdminSidebar() {
   return (
     <aside className="flex w-64 shrink-0 flex-col bg-eficto-green-dark px-5 py-8">
       <div className="px-2">
-        <LogoMark className="h-9 w-auto text-eficto-gold" />
+        <LogoMark className="h-9" />
       </div>
       <nav className="mt-10 flex flex-col gap-1.5">
         {LINKS.map((link) => {

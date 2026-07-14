@@ -17,7 +17,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-eficto-gold/30 bg-eficto-green/95 backdrop-blur supports-[backdrop-filter]:bg-eficto-green/90">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 sm:px-8">
         <Link href="/" onClick={() => setOpen(false)}>
-          <Logo markClassName="text-eficto-gold" wordmarkClassName="text-eficto-cream" />
+          <Logo />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">

@@ -1,57 +1,73 @@
-type LogoMarkProps = {
-  className?: string;
+import Image from "next/image";
+
+type Variant = "white" | "green";
+
+const ICON = {
+  white: { src: "/logo/icon-white.png", width: 508, height: 335 },
+  green: { src: "/logo/icon-green.png", width: 496, height: 325 },
 };
 
-/** Abstract concentric-oval mark — echoes the restaurant's arched interior. */
-export function LogoMark({ className }: LogoMarkProps) {
-  const rings = [
-    { rx: 46, ry: 34 },
-    { rx: 37, ry: 27 },
-    { rx: 28, ry: 20 },
-    { rx: 19, ry: 13 },
-  ];
+const WORDMARK_EN = {
+  white: { src: "/logo/wordmark-en-white.png", width: 879, height: 555 },
+  green: { src: "/logo/wordmark-en-green.png", width: 721, height: 288 },
+};
 
+const WORDMARK_AR = {
+  white: { src: "/logo/wordmark-ar-white.png", width: 344, height: 143 },
+  green: { src: "/logo/wordmark-ar-green.png", width: 344, height: 143 },
+};
+
+type LogoMarkProps = {
+  className?: string;
+  variant?: Variant;
+};
+
+/** The real eficto shell mark, extracted from the brand's own logo files. */
+export function LogoMark({ className, variant = "white" }: LogoMarkProps) {
+  const icon = ICON[variant];
   return (
-    <svg
-      viewBox="0 0 100 72"
-      className={className}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      {rings.map((r, i) => (
-        <ellipse
-          key={i}
-          cx="50"
-          cy="36"
-          rx={r.rx}
-          ry={r.ry}
-          stroke="currentColor"
-          strokeWidth="1.4"
-        />
-      ))}
-      <ellipse cx="50" cy="36" rx="4.5" ry="3.2" fill="currentColor" />
-    </svg>
+    <Image
+      src={icon.src}
+      width={icon.width}
+      height={icon.height}
+      alt="eficto"
+      className={`h-9 w-auto ${className ?? ""}`}
+      priority
+    />
   );
 }
 
 type LogoProps = {
   className?: string;
-  markClassName?: string;
+  variant?: Variant;
   wordmarkClassName?: string;
   withArabic?: boolean;
 };
 
-export function Logo({ className, markClassName, wordmarkClassName, withArabic = true }: LogoProps) {
+export function Logo({ className, variant = "white", wordmarkClassName, withArabic = true }: LogoProps) {
+  const wordmark = WORDMARK_EN[variant];
+  const wordmarkAr = WORDMARK_AR[variant];
+
   return (
     <div className={`flex items-center gap-3 ${className ?? ""}`}>
-      <LogoMark className={`h-9 w-auto ${markClassName ?? ""}`} />
+      <LogoMark variant={variant} className="h-9" />
       <div className="leading-tight">
-        <div className={`font-serif text-2xl tracking-[0.08em] ${wordmarkClassName ?? ""}`}>
-          eficto
-        </div>
+        <Image
+          src={wordmark.src}
+          width={wordmark.width}
+          height={wordmark.height}
+          alt="eficto"
+          className={`h-6 w-auto ${wordmarkClassName ?? ""}`}
+          priority
+        />
         {withArabic && (
-          <div className="font-arabic-display text-xs tracking-[0.15em] opacity-80">إفيكتو</div>
+          <Image
+            src={wordmarkAr.src}
+            width={wordmarkAr.width}
+            height={wordmarkAr.height}
+            alt="إفيكتو"
+            className="mt-0.5 h-3 w-auto opacity-90"
+          />
         )}
       </div>
     </div>
