@@ -3,18 +3,31 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { relativeMinutesSince } from "@/lib/format";
+import { useCustomerIdentity } from "@/lib/useCustomerIdentity";
+import { IdentityForm } from "./IdentityForm";
+import { IdentityBadge } from "./IdentityBadge";
 
 const STORAGE_KEY = "eficto_waitlist_entry";
 
+type WaitlistLocation = "indoor" | "outdoor" | "any";
 type MyEntry = { id: string; joined_at: string; party_size: number };
 type FormStatus = "idle" | "submitting" | "error";
 
+const LOCATION_LABELS: Record<WaitlistLocation, string> = {
+  any: "أي مكان",
+  indoor: "الداخل",
+  outdoor: "الخارج",
+};
+
 export function WaitlistWidget() {
+  const { identity, ready, save, clear } = useCustomerIdentity();
   const [waitingCount, setWaitingCount] = useState<number | null>(null);
   const [myEntry, setMyEntry] = useState<MyEntry | null>(null);
   const [myPosition, setMyPosition] = useState<number | null>(null);
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [location, setLocation] = useState<WaitlistLocation>("any");
+  const [partySize, setPartySize] = useState(2);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -73,14 +86,15 @@ export function WaitlistWidget() {
 
   async function handleJoin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!identity) return;
     setFormStatus("submitting");
     setError(null);
 
-    const form = new FormData(e.currentTarget);
     const payload = {
-      full_name: String(form.get("full_name") ?? ""),
-      phone: String(form.get("phone") ?? ""),
-      party_size: Number(form.get("party_size")),
+      full_name: identity.full_name,
+      phone: identity.phone,
+      party_size: partySize,
+      location,
     };
 
     try {
@@ -152,40 +166,50 @@ export function WaitlistWidget() {
             إلغاء الانتظار
           </button>
         </div>
+      ) : !ready ? null : !identity ? (
+        <IdentityForm onSubmit={save} />
       ) : (
         <form onSubmit={handleJoin} className="space-y-5">
+          <IdentityBadge fullName={identity.full_name} onChange={clear} />
+
           <div>
-            <label className="mb-1.5 block text-sm text-eficto-green-dark/80">الاسم الكامل</label>
-            <input
-              name="full_name"
-              required
-              minLength={2}
-              className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
-            />
+            <label className="mb-1.5 block text-sm text-eficto-green-dark/80">اختر المنطقة</label>
+            <div className="grid grid-cols-3 gap-3">
+              {(["indoor", "outdoor", "any"] as WaitlistLocation[]).map((loc) => (
+                <button
+                  key={loc}
+                  type="button"
+                  onClick={() => setLocation(loc)}
+                  className={`rounded-xl border py-3 text-sm transition-colors ${
+                    location === loc
+                      ? "border-eficto-green bg-eficto-green text-eficto-cream"
+                      : "border-eficto-gold/40 bg-white/70 text-eficto-green-dark/80"
+                  }`}
+                >
+                  {LOCATION_LABELS[loc]}
+                </button>
+              ))}
+            </div>
           </div>
-          <div>
-            <label className="mb-1.5 block text-sm text-eficto-green-dark/80">رقم الجوال</label>
-            <input
-              name="phone"
-              type="tel"
-              dir="ltr"
-              placeholder="05XXXXXXXX"
-              required
-              pattern="^(?:\+966|0)5\d{8}$"
-              className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 text-left outline-none transition-colors focus:border-eficto-gold"
-            />
-          </div>
+
           <div>
             <label className="mb-1.5 block text-sm text-eficto-green-dark/80">عدد الأشخاص</label>
-            <input
-              name="party_size"
-              type="number"
-              min={1}
-              max={20}
-              defaultValue={2}
-              required
-              className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
-            />
+            <div className="flex flex-wrap gap-2" dir="ltr">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setPartySize(n)}
+                  className={`flex h-11 w-11 items-center justify-center rounded-full border text-sm transition-colors ${
+                    partySize === n
+                      ? "border-eficto-green bg-eficto-green text-eficto-cream"
+                      : "border-eficto-gold/40 bg-white/70 text-eficto-green-dark/80"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
           </div>
 
           {formStatus === "error" && <p className="text-sm text-eficto-alert">{error}</p>}

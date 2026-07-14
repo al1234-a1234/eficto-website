@@ -5,7 +5,7 @@ export default async function AdminWaitlistPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("eficto_waitlist")
-    .select("id, party_size, status, joined_at, eficto_customers(full_name, phone)")
+    .select("id, party_size, location, status, joined_at, eficto_customers(full_name, phone)")
     .eq("status", "waiting")
     .order("joined_at", { ascending: true });
 

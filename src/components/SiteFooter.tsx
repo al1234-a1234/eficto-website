@@ -8,7 +8,7 @@ import { NAV_LINKS, SITE } from "@/lib/constants";
 
 export function SiteFooter() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/admin")) return null;
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/staff")) return null;
 
   return (
     <footer className="border-t border-eficto-gold/25 bg-eficto-green-dark text-eficto-cream/90">

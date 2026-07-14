@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/admin/waitlist", label: "الانتظار" },
   { href: "/admin/customers", label: "العملاء" },
   { href: "/admin/reports", label: "التقارير" },
+  { href: "/admin/settings", label: "الإعدادات" },
 ];
 
 export function AdminSidebar() {

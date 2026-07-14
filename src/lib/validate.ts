@@ -17,6 +17,10 @@ export function isValidLocation(location: unknown): location is "indoor" | "outd
   return location === "indoor" || location === "outdoor";
 }
 
+export function isValidWaitlistLocation(location: unknown): location is "indoor" | "outdoor" | "any" {
+  return location === "indoor" || location === "outdoor" || location === "any";
+}
+
 /** Restaurant operates 5:00 PM – 2:30 AM Riyadh time. */
 export function isWithinOperatingHours(time: string) {
   const [h, m] = time.split(":").map(Number);

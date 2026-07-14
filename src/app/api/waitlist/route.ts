@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { upsertCustomer } from "@/lib/reservationLogic";
-import { isValidPartySize, isValidSaudiPhone, normalizePhone } from "@/lib/validate";
+import { isValidPartySize, isValidSaudiPhone, isValidWaitlistLocation, normalizePhone } from "@/lib/validate";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "بيانات غير صحيحة" }, { status: 400 });
 
-  const { full_name, phone, party_size } = body as Record<string, unknown>;
+  const { full_name, phone, party_size, location } = body as Record<string, unknown>;
 
   if (
     typeof full_name !== "string" ||
@@ -15,7 +15,8 @@ export async function POST(request: Request) {
     typeof phone !== "string" ||
     !isValidSaudiPhone(phone) ||
     typeof party_size !== "number" ||
-    !isValidPartySize(party_size)
+    !isValidPartySize(party_size) ||
+    !isValidWaitlistLocation(location)
   ) {
     return NextResponse.json({ error: "الرجاء التحقق من البيانات" }, { status: 400 });
   }
@@ -39,8 +40,8 @@ export async function POST(request: Request) {
 
     const { data: entry, error } = await supabase
       .from("eficto_waitlist")
-      .insert({ customer_id: customerId, party_size, status: "waiting" })
-      .select("id, party_size, status, joined_at")
+      .insert({ customer_id: customerId, party_size, location, status: "waiting" })
+      .select("id, party_size, location, status, joined_at")
       .single();
 
     if (error) throw error;

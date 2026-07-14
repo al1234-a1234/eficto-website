@@ -39,6 +39,7 @@ export interface WaitlistEntry {
   id: string;
   customer_id: string | null;
   party_size: number;
+  location: TableLocation | "any";
   status: WaitlistStatus;
   joined_at: string;
 }

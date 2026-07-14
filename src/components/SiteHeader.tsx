@@ -11,7 +11,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  if (pathname?.startsWith("/admin")) return null;
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/staff")) return null;
 
   return (
     <header className="sticky top-0 z-50 border-b border-eficto-gold/30 bg-eficto-green/95 backdrop-blur supports-[backdrop-filter]:bg-eficto-green/90">

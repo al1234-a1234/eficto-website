@@ -3,6 +3,9 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { formatArabicDateTime } from "@/lib/format";
+import { useCustomerIdentity } from "@/lib/useCustomerIdentity";
+import { IdentityForm } from "./IdentityForm";
+import { IdentityBadge } from "./IdentityBadge";
 
 type Status = "idle" | "submitting" | "success" | "error" | "full";
 type Location = "indoor" | "outdoor";
@@ -12,24 +15,27 @@ function todayISO() {
 }
 
 export function ReservationForm() {
+  const { identity, ready, save, clear } = useCustomerIdentity();
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState<string | null>(null);
   const [confirmedTime, setConfirmedTime] = useState<string | null>(null);
   const [dailyNumber, setDailyNumber] = useState<number | null>(null);
   const [location, setLocation] = useState<Location>("indoor");
+  const [partySize, setPartySize] = useState(2);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!identity) return;
     setStatus("submitting");
     setMessage(null);
 
     const form = new FormData(e.currentTarget);
     const payload = {
-      full_name: String(form.get("full_name") ?? ""),
-      phone: String(form.get("phone") ?? ""),
+      full_name: identity.full_name,
+      phone: identity.phone,
       date: String(form.get("date") ?? ""),
       time: String(form.get("time") ?? ""),
-      party_size: Number(form.get("party_size")),
+      party_size: partySize,
       location,
     };
 
@@ -58,6 +64,12 @@ export function ReservationForm() {
     }
   }
 
+  if (!ready) return null;
+
+  if (!identity) {
+    return <IdentityForm onSubmit={save} />;
+  }
+
   if (status === "success" && confirmedTime) {
     return (
       <div className="rounded-2xl border border-eficto-gold/40 bg-white/70 p-8 text-center shadow-soft">
@@ -76,28 +88,7 @@ export function ReservationForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">الاسم الكامل</label>
-        <input
-          name="full_name"
-          required
-          minLength={2}
-          className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
-        />
-      </div>
-
-      <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">رقم الجوال</label>
-        <input
-          name="phone"
-          type="tel"
-          dir="ltr"
-          placeholder="05XXXXXXXX"
-          required
-          pattern="^(?:\+966|0)5\d{8}$"
-          className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 text-left outline-none transition-colors focus:border-eficto-gold"
-        />
-      </div>
+      <IdentityBadge fullName={identity.full_name} onChange={clear} />
 
       <div>
         <label className="mb-1.5 block text-sm text-eficto-green-dark/80">مكان الجلسة</label>
@@ -127,6 +118,26 @@ export function ReservationForm() {
         </div>
       </div>
 
+      <div>
+        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">عدد الأشخاص</label>
+        <div className="flex flex-wrap gap-2" dir="ltr">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setPartySize(n)}
+              className={`flex h-11 w-11 items-center justify-center rounded-full border text-sm transition-colors ${
+                partySize === n
+                  ? "border-eficto-green bg-eficto-green text-eficto-cream"
+                  : "border-eficto-gold/40 bg-white/70 text-eficto-green-dark/80"
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1.5 block text-sm text-eficto-green-dark/80">التاريخ</label>
@@ -147,19 +158,6 @@ export function ReservationForm() {
             className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
           />
         </div>
-      </div>
-
-      <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">عدد الأشخاص</label>
-        <input
-          name="party_size"
-          type="number"
-          min={1}
-          max={20}
-          defaultValue={2}
-          required
-          className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
-        />
       </div>
 
       <p className="text-xs text-eficto-green-dark/50">ساعات العمل يومياً ٥:٠٠ م — ٢:٣٠ ص</p>

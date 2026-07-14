@@ -7,10 +7,17 @@ import { relativeMinutesSince } from "@/lib/format";
 export interface WaitlistRow {
   id: string;
   party_size: number;
+  location: "indoor" | "outdoor" | "any";
   status: "waiting" | "seated" | "left";
   joined_at: string;
   eficto_customers: { full_name: string; phone: string } | null;
 }
+
+const LOCATION_LABELS: Record<WaitlistRow["location"], string> = {
+  indoor: "داخلي",
+  outdoor: "خارجي",
+  any: "أي مكان",
+};
 
 export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] }) {
   const [rows, setRows] = useState(initialRows.filter((r) => r.status === "waiting"));
@@ -21,7 +28,7 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
     async function refresh() {
       const { data } = await supabase
         .from("eficto_waitlist")
-        .select("id, party_size, status, joined_at, eficto_customers(full_name, phone)")
+        .select("id, party_size, location, status, joined_at, eficto_customers(full_name, phone)")
         .eq("status", "waiting")
         .order("joined_at", { ascending: true });
       setRows((data ?? []) as unknown as WaitlistRow[]);
@@ -85,7 +92,9 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
           </div>
           <div className="flex items-center gap-4">
             <div className="text-left text-sm text-eficto-green-dark/60">
-              <p>{row.party_size} أشخاص</p>
+              <p>
+                {row.party_size} أشخاص · {LOCATION_LABELS[row.location]}
+              </p>
               <p className="text-xs">منذ {relativeMinutesSince(row.joined_at)} دقيقة</p>
             </div>
             <button

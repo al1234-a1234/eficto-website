@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isStaffAuthenticated } from "@/lib/staffAuth";
+
+export async function PATCH(request: Request) {
+  if (!(await isStaffAuthenticated())) {
+    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+  }
+
+  const body = await request.json().catch(() => null);
+  const id = body && typeof body.id === "string" ? body.id : null;
+  const status = body && (body.status === "seated" || body.status === "left") ? body.status : null;
+  if (!id || !status) return NextResponse.json({ error: "بيانات غير صحيحة" }, { status: 400 });
+
+  const supabase = createAdminClient();
+
+  const { data: entry } = await supabase
+    .from("eficto_waitlist")
+    .select("id, customer_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  const { error } = await supabase.from("eficto_waitlist").update({ status }).eq("id", id);
+  if (error) return NextResponse.json({ error: "تعذر تحديث الحالة" }, { status: 500 });
+
+  if (status === "seated" && entry?.customer_id) {
+    const { data: customer } = await supabase
+      .from("eficto_customers")
+      .select("id, visit_count")
+      .eq("id", entry.customer_id)
+      .maybeSingle();
+    if (customer) {
+      await supabase
+        .from("eficto_customers")
+        .update({ visit_count: (customer.visit_count ?? 0) + 1, last_visit_at: new Date().toISOString() })
+        .eq("id", customer.id);
+    }
+  }
+
+  return NextResponse.json({ ok: true });
+}
