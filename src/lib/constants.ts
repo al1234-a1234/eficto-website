@@ -13,8 +13,7 @@ export const SITE = {
 
 export const NAV_LINKS = [
   { href: "/", label: "الرئيسية" },
-  { href: "/reserve", label: "الحجز" },
-  { href: "/waitlist", label: "الانتظار" },
-  { href: "/reviews", label: "شاركنا تقييمك" },
   { href: "/contact", label: "تواصل معنا" },
+  { href: "/reviews", label: "شاركنا تقييمك" },
+  { href: "/account", label: "حسابي" },
 ];

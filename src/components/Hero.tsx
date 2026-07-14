@@ -32,16 +32,16 @@ export function Hero() {
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
           <Link
-            href="/reserve"
+            href="/waitlist?location=indoor"
             className="rounded-full bg-eficto-gold px-8 py-3 text-sm font-medium text-eficto-green-dark transition-transform duration-300 ease-soft hover:scale-[1.03]"
           >
-            احجز الآن
+            طاولة داخلية
           </Link>
           <Link
-            href="/waitlist"
+            href="/waitlist?location=outdoor"
             className="rounded-full border border-eficto-cream/40 px-8 py-3 text-sm text-eficto-cream transition-colors duration-300 ease-soft hover:border-eficto-gold hover:text-eficto-gold"
           >
-            انضم لقائمة الانتظار
+            طاولة خارجية
           </Link>
         </div>
 

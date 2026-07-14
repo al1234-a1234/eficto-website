@@ -30,6 +30,11 @@ export function WaitlistWidget() {
   const [partySize, setPartySize] = useState(2);
 
   useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("location");
+    if (requested === "indoor" || requested === "outdoor") setLocation(requested);
+  }, []);
+
+  useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
@@ -152,9 +157,9 @@ export function WaitlistWidget() {
 
       {myEntry ? (
         <div className="rounded-2xl border border-eficto-gold/40 bg-eficto-green/5 p-6 text-center">
-          <p className="text-sm text-eficto-green-dark/70">أنت في قائمة الانتظار</p>
-          <p className="mt-2 font-arabic-display text-3xl text-eficto-green">
-            المركز {myPosition ?? "…"}
+          <p className="text-sm text-eficto-green-dark/70">دورك</p>
+          <p className="mt-2 font-arabic-display text-5xl text-eficto-green">
+            {myPosition ?? "…"}
           </p>
           <p className="mt-2 text-xs text-eficto-green-dark/50">
             منذ {relativeMinutesSince(myEntry.joined_at)} دقيقة · {myEntry.party_size} أشخاص

@@ -57,7 +57,7 @@ export function SiteHeader() {
             <MapPinIcon className="h-5 w-5" />
           </a>
           <Link
-            href="/reserve"
+            href="/waitlist"
             className="rounded-full border border-eficto-gold px-5 py-2 text-sm text-eficto-gold transition-colors duration-300 ease-soft hover:bg-eficto-gold hover:text-eficto-green-dark"
           >
             احجز الآن
@@ -96,7 +96,7 @@ export function SiteHeader() {
                 <MapPinIcon className="h-5 w-5" />
               </a>
               <Link
-                href="/reserve"
+                href="/waitlist"
                 onClick={() => setOpen(false)}
                 className="mr-auto rounded-full border border-eficto-gold px-5 py-2 text-sm text-eficto-gold"
               >

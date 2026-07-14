@@ -1,23 +1,28 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useCustomerIdentity } from "@/lib/useCustomerIdentity";
+import { IdentityForm } from "./IdentityForm";
+import { IdentityBadge } from "./IdentityBadge";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
 export function ReviewForm() {
+  const { identity, ready, save, clear } = useCustomerIdentity();
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState<string | null>(null);
   const [rating, setRating] = useState(5);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!identity) return;
     setStatus("submitting");
     setMessage(null);
 
     const form = new FormData(e.currentTarget);
     const payload = {
-      full_name: String(form.get("full_name") ?? ""),
-      phone: String(form.get("phone") ?? ""),
+      full_name: identity.full_name,
+      phone: identity.phone,
       rating,
       comment: String(form.get("comment") ?? ""),
     };
@@ -42,6 +47,12 @@ export function ReviewForm() {
     }
   }
 
+  if (!ready) return null;
+
+  if (!identity) {
+    return <IdentityForm onSubmit={save} />;
+  }
+
   if (status === "success") {
     return (
       <div className="rounded-2xl border border-eficto-gold/40 bg-white/70 p-8 text-center shadow-soft">
@@ -53,28 +64,7 @@ export function ReviewForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">الاسم الكامل</label>
-        <input
-          name="full_name"
-          required
-          minLength={2}
-          className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
-        />
-      </div>
-
-      <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">رقم الجوال</label>
-        <input
-          name="phone"
-          type="tel"
-          dir="ltr"
-          placeholder="05XXXXXXXX"
-          required
-          pattern="^(?:\+966|0)5\d{8}$"
-          className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 text-left outline-none transition-colors focus:border-eficto-gold"
-        />
-      </div>
+      <IdentityBadge fullName={identity.full_name} onChange={clear} />
 
       <div>
         <label className="mb-1.5 block text-sm text-eficto-green-dark/80">تقييمك</label>

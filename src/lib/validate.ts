@@ -13,10 +13,6 @@ export function isValidPartySize(size: number) {
   return Number.isInteger(size) && size >= 1 && size <= 20;
 }
 
-export function isValidLocation(location: unknown): location is "indoor" | "outdoor" {
-  return location === "indoor" || location === "outdoor";
-}
-
 export function isValidWaitlistLocation(location: unknown): location is "indoor" | "outdoor" | "any" {
   return location === "indoor" || location === "outdoor" || location === "any";
 }

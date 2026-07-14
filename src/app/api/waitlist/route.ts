@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { upsertCustomer } from "@/lib/reservationLogic";
-import { isValidPartySize, isValidSaudiPhone, isValidWaitlistLocation, normalizePhone } from "@/lib/validate";
+import { isLocationFull, upsertCustomer } from "@/lib/reservationLogic";
+import {
+  isValidPartySize,
+  isValidSaudiPhone,
+  isValidWaitlistLocation,
+  isWithinOperatingHours,
+  normalizePhone,
+} from "@/lib/validate";
+
+function currentRiyadhTimeString() {
+  const riyadhNow = new Date(Date.now() + 3 * 60 * 60 * 1000);
+  return `${String(riyadhNow.getUTCHours()).padStart(2, "0")}:${String(riyadhNow.getUTCMinutes()).padStart(2, "0")}`;
+}
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -21,8 +32,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "الرجاء التحقق من البيانات" }, { status: 400 });
   }
 
+  if (!isWithinOperatingHours(currentRiyadhTimeString())) {
+    return NextResponse.json({ error: "المطعم مغلق حالياً — ساعات العمل يومياً ٥:٠٠ م — ٢:٣٠ ص" }, { status: 409 });
+  }
+
   try {
     const supabase = createAdminClient();
+
+    if (location !== "any" && (await isLocationFull(supabase, location))) {
+      return NextResponse.json(
+        { error: location === "indoor" ? "الجلسة الداخلية ممتلئة حالياً" : "الجلسة الخارجية ممتلئة حالياً" },
+        { status: 409 }
+      );
+    }
+
     const normalizedPhone = normalizePhone(phone);
 
     const { data: alreadyWaiting } = await supabase
