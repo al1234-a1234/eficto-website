@@ -2,12 +2,13 @@ import Link from "next/link";
 import { PhotoBackground } from "./PhotoBackground";
 import { LogoMark } from "./Logo";
 import { LiveStatusBadge } from "./LiveStatusBadge";
+import { IMAGES } from "@/lib/assets";
 
 export function Hero() {
   return (
     <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden">
       <PhotoBackground
-        src="/images/interior-arch.jpg"
+        src={IMAGES.interiorArch}
         alt="أجواء إفيكتو الداخلية"
         className="absolute inset-0"
         dim

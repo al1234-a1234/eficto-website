@@ -1,21 +1,11 @@
 import Image from "next/image";
+import { LOGO } from "@/lib/assets";
 
 type Variant = "white" | "green";
 
-const ICON = {
-  white: { src: "/logo/icon-white.png", width: 508, height: 335 },
-  green: { src: "/logo/icon-green.png", width: 496, height: 325 },
-};
-
-const WORDMARK_EN = {
-  white: { src: "/logo/wordmark-en-white.png", width: 879, height: 555 },
-  green: { src: "/logo/wordmark-en-green.png", width: 721, height: 288 },
-};
-
-const WORDMARK_AR = {
-  white: { src: "/logo/wordmark-ar-white.png", width: 344, height: 143 },
-  green: { src: "/logo/wordmark-ar-green.png", width: 344, height: 143 },
-};
+const ICON = { white: LOGO.iconWhite, green: LOGO.iconGreen };
+const WORDMARK_EN = { white: LOGO.wordmarkEnWhite, green: LOGO.wordmarkEnGreen };
+const WORDMARK_AR = { white: LOGO.wordmarkArWhite, green: LOGO.wordmarkArGreen };
 
 type LogoMarkProps = {
   className?: string;
@@ -33,6 +23,7 @@ export function LogoMark({ className, variant = "white" }: LogoMarkProps) {
       alt="eficto"
       className={`h-9 w-auto ${className ?? ""}`}
       priority
+      unoptimized
     />
   );
 }
@@ -59,6 +50,7 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
           alt="eficto"
           className={`h-6 w-auto ${wordmarkClassName ?? ""}`}
           priority
+          unoptimized
         />
         {withArabic && (
           <Image
@@ -67,6 +59,7 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
             height={wordmarkAr.height}
             alt="إفيكتو"
             className="mt-0.5 h-3 w-auto opacity-90"
+            unoptimized
           />
         )}
       </div>

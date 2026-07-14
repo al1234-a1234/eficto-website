@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { IMAGES } from "@/lib/assets";
 
 const PILLARS = [
   { title: "الأقواس الخشبية", desc: "خطوط معمارية دافئة مستوحاة من العمارة الإيطالية الكلاسيكية." },
@@ -34,29 +35,32 @@ export function AmbienceSection() {
         <div className="grid grid-cols-2 gap-4">
           <div className="relative col-span-2 h-56 overflow-hidden rounded-2xl arch-frame">
             <Image
-              src="/images/interior-arch.jpg"
+              src={IMAGES.interiorArch}
               alt="أجواء إفيكتو الداخلية"
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover"
+              unoptimized
             />
           </div>
           <div className="relative h-40 overflow-hidden rounded-2xl arch-frame">
             <Image
-              src="/images/interior-booth.jpg"
+              src={IMAGES.interiorBooth}
               alt="جلسات إفيكتو"
               fill
               sizes="(min-width: 768px) 25vw, 50vw"
               className="object-cover"
+              unoptimized
             />
           </div>
           <div className="relative h-40 overflow-hidden rounded-2xl arch-frame">
             <Image
-              src="/images/floor-logo.jpg"
+              src={IMAGES.floorLogo}
               alt="شعار إفيكتو عند المدخل"
               fill
               sizes="(min-width: 768px) 25vw, 50vw"
               className="object-cover"
+              unoptimized
             />
           </div>
         </div>
