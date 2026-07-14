@@ -15,6 +15,7 @@ const config: Config = {
             DEFAULT: "#CBA97D",
             light: "#E4D2B0",
             dark: "#AB8A5E",
+            deep: "#7A5C36",
           },
           cream: "#F3E9D7",
           ivory: "#FBF6EC",

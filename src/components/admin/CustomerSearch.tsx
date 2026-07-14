@@ -61,7 +61,7 @@ export function CustomerSearch({ initialCustomers }: { initialCustomers: Custome
                       {c.full_name}
                     </Link>
                     {c.visit_count >= 5 && (
-                      <span className="mr-2 rounded-full bg-eficto-gold/20 px-2 py-0.5 text-[10px] text-eficto-gold-dark">
+                      <span className="mr-2 rounded-full bg-eficto-gold/20 px-2 py-0.5 text-[10px] text-eficto-gold-deep">
                         VIP
                       </span>
                     )}

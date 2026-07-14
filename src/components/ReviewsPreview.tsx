@@ -11,7 +11,7 @@ export async function ReviewsPreview() {
   return (
     <section className="section-fade mx-auto max-w-6xl px-5 py-24 sm:px-8">
       <div className="text-center">
-        <p className="font-arabic-body text-sm tracking-[0.2em] text-eficto-gold">آراء عملائنا</p>
+        <p className="font-arabic-body text-sm tracking-[0.2em] text-eficto-gold-deep">آراء عملائنا</p>
         <h2 className="mt-3 font-arabic-display text-3xl text-eficto-green-dark sm:text-4xl">
           ماذا يقول ضيوفنا
         </h2>

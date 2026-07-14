@@ -11,7 +11,7 @@ export function AmbienceSection() {
     <section className="section-fade mx-auto max-w-6xl px-5 py-24 sm:px-8">
       <div className="grid gap-14 md:grid-cols-2 md:items-center">
         <div>
-          <p className="font-arabic-body text-sm tracking-[0.2em] text-eficto-gold">من نحن</p>
+          <p className="font-arabic-body text-sm tracking-[0.2em] text-eficto-gold-deep">من نحن</p>
           <h2 className="mt-3 font-arabic-display text-3xl leading-relaxed text-eficto-green-dark sm:text-4xl">
             أجواء إيطالية أصيلة، بلمسة بريدة
           </h2>

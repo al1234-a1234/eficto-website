@@ -32,7 +32,7 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
           <p dir="ltr" className="mt-1 text-sm text-eficto-green-dark/60">{customer.phone}</p>
         </div>
         {customer.visit_count >= 5 && (
-          <span className="rounded-full bg-eficto-gold/20 px-3 py-1 text-xs text-eficto-gold-dark">عميل VIP</span>
+          <span className="rounded-full bg-eficto-gold/20 px-3 py-1 text-xs text-eficto-gold-deep">عميل VIP</span>
         )}
       </div>
 

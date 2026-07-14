@@ -5,7 +5,7 @@ export function ContactTeaser() {
   return (
     <section className="section-fade bg-eficto-cream py-24">
       <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
-        <p className="font-arabic-body text-sm tracking-[0.2em] text-eficto-gold">تواصل معنا</p>
+        <p className="font-arabic-body text-sm tracking-[0.2em] text-eficto-gold-deep">تواصل معنا</p>
         <h2 className="mt-3 font-arabic-display text-3xl text-eficto-green-dark sm:text-4xl">
           نسعد باستقبالكم
         </h2>
@@ -41,7 +41,7 @@ export function ContactTeaser() {
         </div>
 
         <div className="mt-8 flex items-center justify-center gap-2 text-sm text-eficto-green-dark/70">
-          <ClockIcon className="h-4 w-4 text-eficto-gold" />
+          <ClockIcon className="h-4 w-4 text-eficto-gold-deep" />
           <span>يومياً {SITE.hoursAr}</span>
         </div>
       </div>

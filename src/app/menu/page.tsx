@@ -28,7 +28,7 @@ export default function MenuPage() {
                     <h3 className="font-serif text-lg text-eficto-green">{item.name}</h3>
                     <p className="mt-1 text-sm leading-6 text-eficto-green-dark/65">{item.desc}</p>
                   </div>
-                  <p className="shrink-0 whitespace-nowrap font-arabic-display text-eficto-gold-dark">
+                  <p className="shrink-0 whitespace-nowrap font-arabic-display text-eficto-gold-deep">
                     {item.price} ر.س
                   </p>
                 </div>
