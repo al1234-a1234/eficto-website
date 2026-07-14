@@ -43,3 +43,7 @@ body {
   font-variation-settings: "SOFT" 100, "opsz" 24;
   font-weight: 400;
 }
+
+.font-arabic-display {
+  font-weight: 600;
+}
