@@ -53,14 +53,19 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
           unoptimized
         />
         {withArabic && (
-          <Image
-            src={wordmarkAr.src}
-            width={wordmarkAr.width}
-            height={wordmarkAr.height}
-            alt="افيكتو"
-            className="mt-0.5 h-auto w-14"
-            unoptimized
-          />
+          <>
+            <div
+              className={`my-0.5 h-px w-10 ${variant === "white" ? "bg-eficto-cream/30" : "bg-eficto-green-dark/25"}`}
+            />
+            <Image
+              src={wordmarkAr.src}
+              width={wordmarkAr.width}
+              height={wordmarkAr.height}
+              alt="افيكتو"
+              className="h-auto w-14"
+              unoptimized
+            />
+          </>
         )}
       </div>
     </div>

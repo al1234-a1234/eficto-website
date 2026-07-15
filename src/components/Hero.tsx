@@ -26,15 +26,16 @@ export function Hero() {
           width={LOGO.wordmarkEnWhite.width}
           height={LOGO.wordmarkEnWhite.height}
           alt="EFICTO"
-          className="mt-8 h-7 w-auto sm:h-8"
+          className="mt-8 h-8 w-auto sm:h-10"
           unoptimized
         />
+        <div className="my-4 h-px w-16 bg-eficto-cream/30" />
         <Image
           src={LOGO.wordmarkArWhite.src}
           width={LOGO.wordmarkArWhite.width}
           height={LOGO.wordmarkArWhite.height}
           alt="افيكتو"
-          className="mt-3 h-14 w-auto sm:h-16"
+          className="h-14 w-auto sm:h-16"
           unoptimized
         />
 
