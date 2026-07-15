@@ -48,7 +48,7 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
           width={wordmark.width}
           height={wordmark.height}
           alt="eficto"
-          className={`h-6 w-auto ${wordmarkClassName ?? ""}`}
+          className={`h-3.5 w-auto ${wordmarkClassName ?? ""}`}
           priority
           unoptimized
         />
@@ -58,7 +58,7 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
             width={wordmarkAr.width}
             height={wordmarkAr.height}
             alt="افيكتو"
-            className="mt-0.5 h-3 w-auto"
+            className="mt-0.5 h-5 w-auto"
             unoptimized
           />
         )}
