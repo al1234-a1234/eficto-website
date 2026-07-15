@@ -21,21 +21,23 @@ export function Hero() {
 
         <h1 className="sr-only">افيكتو | eficto</h1>
 
-        <Image
-          src={LOGO.wordmarkEnWhite.src}
-          width={LOGO.wordmarkEnWhite.width}
-          height={LOGO.wordmarkEnWhite.height}
-          alt="EFICTO"
-          className="mt-8 h-8 w-auto sm:h-10"
-          unoptimized
-        />
-        <div className="my-4 h-px w-16 bg-eficto-cream/30" />
+        <div className="mt-8 flex flex-col items-center">
+          <Image
+            src={LOGO.wordmarkEnWhite.src}
+            width={LOGO.wordmarkEnWhite.width}
+            height={LOGO.wordmarkEnWhite.height}
+            alt="EFICTO"
+            className="h-10 w-auto sm:h-12"
+            unoptimized
+          />
+          <div className="mt-4 h-px w-full bg-eficto-cream/30" />
+        </div>
         <Image
           src={LOGO.wordmarkArWhite.src}
           width={LOGO.wordmarkArWhite.width}
           height={LOGO.wordmarkArWhite.height}
           alt="افيكتو"
-          className="h-14 w-auto sm:h-16"
+          className="mt-4 h-14 w-auto sm:h-16"
           unoptimized
         />
 
