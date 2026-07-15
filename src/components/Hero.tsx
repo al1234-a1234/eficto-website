@@ -39,8 +39,8 @@ export function Hero() {
         />
 
         <p className="mt-6 max-w-xl text-balance text-base leading-8 text-eficto-cream/80 sm:text-lg">
-          مطعم إيطالي في قلب بريدة، حيث تلتقي الأقواس الخشبية بالجلد الأخضر الغامق والإضاءة
-          الدافئة — تجربة طعام أصيلة بأجواء هادئة وفاخرة.
+          تجربة طهي فاخرة تُعيد تقديم المذاق الإيطالي الأصيل، حيث تُحضّر أطباقنا الكلاسيكية بشغف
+          وعلى أصولها العريقة.
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">

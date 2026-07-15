@@ -14,7 +14,7 @@ export function SiteHeader() {
   if (pathname?.startsWith("/admin") || pathname?.startsWith("/staff")) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-eficto-gold/30 bg-eficto-green/95 backdrop-blur supports-[backdrop-filter]:bg-eficto-green/90">
+    <header className="sticky top-0 z-50 border-b border-eficto-gold/30 bg-eficto-green-dark">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 sm:px-8">
         <Link href="/" onClick={() => setOpen(false)}>
           <Logo />

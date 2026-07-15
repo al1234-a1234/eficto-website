@@ -42,13 +42,13 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
   return (
     <div className={`flex items-center gap-3 ${className ?? ""}`}>
       <LogoMark variant={variant} className="h-9" />
-      <div className="leading-tight" dir="ltr">
+      <div className="flex flex-col items-center leading-tight">
         <Image
           src={wordmark.src}
           width={wordmark.width}
           height={wordmark.height}
           alt="eficto"
-          className={`h-3.5 w-auto ${wordmarkClassName ?? ""}`}
+          className={`h-auto w-14 ${wordmarkClassName ?? ""}`}
           priority
           unoptimized
         />
@@ -58,7 +58,7 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
             width={wordmarkAr.width}
             height={wordmarkAr.height}
             alt="افيكتو"
-            className="mt-0.5 h-5 w-auto"
+            className="mt-0.5 h-auto w-14"
             unoptimized
           />
         )}
