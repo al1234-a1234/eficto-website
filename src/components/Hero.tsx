@@ -1,8 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PhotoBackground } from "./PhotoBackground";
 import { LogoMark } from "./Logo";
 import { LiveStatusBadge } from "./LiveStatusBadge";
-import { IMAGES } from "@/lib/assets";
+import { IMAGES, LOGO } from "@/lib/assets";
 
 export function Hero() {
   return (
@@ -18,12 +19,24 @@ export function Hero() {
       <div className="section-fade relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center">
         <LogoMark className="h-16" />
 
-        <p className="mt-8 font-serif text-lg tracking-[0.35em] text-eficto-gold sm:text-xl">
-          EFICTO
-        </p>
-        <h1 className="mt-2 font-arabic-display text-4xl leading-[1.4] text-eficto-cream sm:text-5xl">
-          افيكتو
-        </h1>
+        <h1 className="sr-only">افيكتو | eficto</h1>
+
+        <Image
+          src={LOGO.wordmarkEnWhite.src}
+          width={LOGO.wordmarkEnWhite.width}
+          height={LOGO.wordmarkEnWhite.height}
+          alt="EFICTO"
+          className="mt-8 h-7 w-auto sm:h-8"
+          unoptimized
+        />
+        <Image
+          src={LOGO.wordmarkArWhite.src}
+          width={LOGO.wordmarkArWhite.width}
+          height={LOGO.wordmarkArWhite.height}
+          alt="افيكتو"
+          className="mt-3 h-14 w-auto sm:h-16"
+          unoptimized
+        />
 
         <p className="mt-6 max-w-xl text-balance text-base leading-8 text-eficto-cream/80 sm:text-lg">
           مطعم إيطالي في قلب بريدة، حيث تلتقي الأقواس الخشبية بالجلد الأخضر الغامق والإضاءة

@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { LogoMark } from "@/components/Logo";
 import { LoginForm } from "@/components/admin/LoginForm";
 
-export const metadata: Metadata = { title: "دخول الإدارة | افيكتو" };
+export const metadata: Metadata = {
+  title: "دخول الإدارة | افيكتو",
+  robots: { index: false, follow: false },
+};
 
 export default function AdminLoginPage() {
   return (
