@@ -19,7 +19,7 @@ export function Hero() {
       <div className="section-fade relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center">
         <LogoMark className="h-16" />
 
-        <h1 className="sr-only">افيكتو | eficto</h1>
+        <h1 className="sr-only">افيكتو eficto</h1>
 
         <div className="mt-8 flex flex-col items-center">
           <Image
