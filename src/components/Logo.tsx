@@ -42,7 +42,7 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
   return (
     <div className={`flex items-center gap-3 ${className ?? ""}`}>
       <LogoMark variant={variant} className="h-9" />
-      <div className="leading-tight">
+      <div className="leading-tight" dir="ltr">
         <Image
           src={wordmark.src}
           width={wordmark.width}
