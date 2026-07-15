@@ -30,7 +30,7 @@ export function Hero() {
             className="h-10 w-auto sm:h-12"
             unoptimized
           />
-          <div className="mt-4 h-px w-full bg-eficto-cream/30" />
+          <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-eficto-gold to-transparent" />
         </div>
         <Image
           src={LOGO.wordmarkArWhite.src}

@@ -42,6 +42,7 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
   return (
     <div className={`flex items-center gap-3 ${className ?? ""}`}>
       <LogoMark variant={variant} className="h-9" />
+      <div className={`h-8 w-px ${variant === "white" ? "bg-eficto-cream/15" : "bg-eficto-green-dark/15"}`} />
       <div className="flex flex-col items-center leading-tight">
         <Image
           src={wordmark.src}
@@ -55,7 +56,7 @@ export function Logo({ className, variant = "white", wordmarkClassName, withArab
         {withArabic && (
           <>
             <div
-              className={`my-0.5 h-px w-10 ${variant === "white" ? "bg-eficto-cream/30" : "bg-eficto-green-dark/25"}`}
+              className={`my-0.5 h-px w-10 ${variant === "white" ? "bg-eficto-gold/40" : "bg-eficto-gold-dark/30"}`}
             />
             <Image
               src={wordmarkAr.src}
