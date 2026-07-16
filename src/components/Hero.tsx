@@ -46,23 +46,23 @@ export function Hero() {
           وعلى أصولها العريقة.
         </p>
 
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
+        <div className="mt-10">
+          <LiveStatusBadge />
+        </div>
+
+        <div className="mt-6 flex flex-row items-center gap-3 sm:gap-4">
           <Link
             href="/waitlist?location=indoor"
-            className="rounded-full bg-eficto-gold px-8 py-3 text-sm font-medium text-eficto-green-dark transition-transform duration-300 ease-soft hover:scale-[1.03]"
+            className="rounded-full bg-eficto-gold px-5 py-3 text-sm font-medium text-eficto-green-dark transition-transform duration-300 ease-soft hover:scale-[1.03] sm:px-8"
           >
             طاولة داخلية
           </Link>
           <Link
             href="/waitlist?location=outdoor"
-            className="rounded-full border border-eficto-cream/40 px-8 py-3 text-sm text-eficto-cream transition-colors duration-300 ease-soft hover:border-eficto-gold hover:text-eficto-gold"
+            className="rounded-full border border-eficto-cream/40 px-5 py-3 text-sm text-eficto-cream transition-colors duration-300 ease-soft hover:border-eficto-gold hover:text-eficto-gold sm:px-8"
           >
             طاولة خارجية
           </Link>
-        </div>
-
-        <div className="mt-8">
-          <LiveStatusBadge />
         </div>
       </div>
     </section>
