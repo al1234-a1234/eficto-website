@@ -12,7 +12,9 @@ export function ContactTeaser() {
 
         <div className="mt-10 grid gap-6 sm:grid-cols-3">
           <a
-            href={`tel:${SITE.phone}`}
+            href={SITE.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex flex-col items-center gap-3 rounded-2xl border border-eficto-gold/30 bg-white/50 p-6 transition-colors hover:border-eficto-gold"
           >
             <PhoneIcon className="h-6 w-6 text-eficto-green" />

@@ -38,7 +38,7 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm text-eficto-cream/75">
             <li className="flex items-center gap-2.5">
               <PhoneIcon className="h-4 w-4 shrink-0 text-eficto-gold" />
-              <a href={`tel:${SITE.phone}`} dir="ltr" className="hover:text-eficto-gold">
+              <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" dir="ltr" className="hover:text-eficto-gold">
                 {SITE.phone}
               </a>
             </li>
