@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { LogoMark } from "./Logo";
 import { InstagramIcon, MapPinIcon, MenuIcon, CloseIcon } from "./icons";
 import { NAV_LINKS, SITE } from "@/lib/constants";
 
@@ -14,7 +15,15 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-eficto-gold/30 bg-eficto-green-dark">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 sm:px-8">
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-3 sm:px-8">
+        <Link
+          href="/"
+          onClick={() => setOpen(false)}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        >
+          <LogoMark className="h-9" />
+        </Link>
+
         <div aria-hidden="true" />
 
         <nav className="hidden items-center gap-8 lg:flex">
