@@ -37,7 +37,7 @@ export function Hero() {
           width={LOGO.wordmarkArWhite.width}
           height={LOGO.wordmarkArWhite.height}
           alt="افيكتو"
-          className="mt-4 h-24 w-auto sm:h-28"
+          className="mt-4 h-16 w-auto sm:h-20"
           unoptimized
         />
 

@@ -10,7 +10,7 @@ export const IMAGES = {
 export const LOGO = {
   iconWhite: { src: `${RAW_BASE}/logo/icon-white.png`, width: 508, height: 335 },
   iconGreen: { src: `${RAW_BASE}/logo/icon-green.png`, width: 496, height: 325 },
-  wordmarkEnWhite: { src: `${RAW_BASE}/logo/wordmark-en-white.png`, width: 879, height: 555 },
+  wordmarkEnWhite: { src: `${RAW_BASE}/logo/wordmark-en-white.png`, width: 560, height: 225 },
   wordmarkEnGreen: { src: `${RAW_BASE}/logo/wordmark-en-green.png`, width: 721, height: 288 },
   wordmarkArWhite: { src: `${RAW_BASE}/logo/wordmark-ar-white.png`, width: 344, height: 143 },
   wordmarkArGreen: { src: `${RAW_BASE}/logo/wordmark-ar-green.png`, width: 344, height: 143 },
