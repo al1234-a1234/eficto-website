@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { relativeMinutesSince } from "@/lib/format";
 import { useCustomerIdentity } from "@/lib/useCustomerIdentity";
+import { safeGetItem, safeRemoveItem, safeSetItem } from "@/lib/safeStorage";
 import { IdentityForm } from "./IdentityForm";
 import { IdentityBadge } from "./IdentityBadge";
 
@@ -35,12 +36,12 @@ export function WaitlistWidget() {
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = safeGetItem(STORAGE_KEY);
     if (stored) {
       try {
         setMyEntry(JSON.parse(stored));
       } catch {
-        localStorage.removeItem(STORAGE_KEY);
+        safeRemoveItem(STORAGE_KEY);
       }
     }
   }, []);
@@ -63,7 +64,7 @@ export function WaitlistWidget() {
           .maybeSingle();
 
         if (!current || current.status !== "waiting") {
-          localStorage.removeItem(STORAGE_KEY);
+          safeRemoveItem(STORAGE_KEY);
           setMyEntry(null);
           setMyPosition(null);
           return;
@@ -116,7 +117,7 @@ export function WaitlistWidget() {
           joined_at: data.entry.joined_at,
           party_size: data.entry.party_size,
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(entry));
+        safeSetItem(STORAGE_KEY, JSON.stringify(entry));
         setMyEntry(entry);
         setMyPosition(data.position);
         setFormStatus("idle");
@@ -137,7 +138,7 @@ export function WaitlistWidget() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: myEntry.id }),
     });
-    localStorage.removeItem(STORAGE_KEY);
+    safeRemoveItem(STORAGE_KEY);
     setMyEntry(null);
     setMyPosition(null);
   }

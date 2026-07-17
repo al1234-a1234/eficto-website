@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { relativeMinutesSince } from "@/lib/format";
 import { useCustomerIdentity } from "@/lib/useCustomerIdentity";
+import { safeGetItem, safeRemoveItem } from "@/lib/safeStorage";
 import { IdentityForm } from "./IdentityForm";
 
 const STORAGE_KEY = "eficto_waitlist_entry";
@@ -17,12 +18,12 @@ export function AccountView() {
   const [myPosition, setMyPosition] = useState<number | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = safeGetItem(STORAGE_KEY);
     if (stored) {
       try {
         setMyEntry(JSON.parse(stored));
       } catch {
-        localStorage.removeItem(STORAGE_KEY);
+        safeRemoveItem(STORAGE_KEY);
       }
     }
   }, []);
@@ -39,7 +40,7 @@ export function AccountView() {
         .maybeSingle();
 
       if (!current || current.status !== "waiting") {
-        localStorage.removeItem(STORAGE_KEY);
+        safeRemoveItem(STORAGE_KEY);
         setMyEntry(null);
         setMyPosition(null);
         return;
@@ -71,7 +72,7 @@ export function AccountView() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: myEntry.id }),
     });
-    localStorage.removeItem(STORAGE_KEY);
+    safeRemoveItem(STORAGE_KEY);
     setMyEntry(null);
     setMyPosition(null);
   }

@@ -1,10 +1,12 @@
+import { safeGetItem, safeRemoveItem, safeSetItem } from "@/lib/safeStorage";
+
 export type CustomerIdentity = { full_name: string; phone: string };
 
 const KEY = "eficto_identity";
 
 export function getStoredIdentity(): CustomerIdentity | null {
   if (typeof window === "undefined") return null;
-  const raw = localStorage.getItem(KEY);
+  const raw = safeGetItem(KEY);
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
@@ -16,9 +18,9 @@ export function getStoredIdentity(): CustomerIdentity | null {
 }
 
 export function setStoredIdentity(identity: CustomerIdentity) {
-  localStorage.setItem(KEY, JSON.stringify(identity));
+  safeSetItem(KEY, JSON.stringify(identity));
 }
 
 export function clearStoredIdentity() {
-  localStorage.removeItem(KEY);
+  safeRemoveItem(KEY);
 }
