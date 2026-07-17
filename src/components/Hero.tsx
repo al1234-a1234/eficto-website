@@ -21,49 +21,49 @@ export function Hero() {
       />
 
       <div className="section-fade relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center">
-        <LogoMark className="h-16" />
+        <LogoMark className="h-14" />
 
         <h1 className="sr-only">افيكتو eficto</h1>
 
-        <div className="mt-10 flex flex-col items-center">
+        <div className="mt-8 flex flex-col items-center">
           <Image
             src={LOGO.wordmarkEnWhite.src}
             width={LOGO.wordmarkEnWhite.width}
             height={LOGO.wordmarkEnWhite.height}
             alt="EFICTO"
-            className="h-10 w-auto sm:h-12"
+            className="h-9 w-auto sm:h-11"
             unoptimized
           />
-          <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-eficto-gold to-transparent" />
+          <div className="mt-3 h-px w-full bg-gradient-to-r from-transparent via-eficto-gold/70 to-transparent" />
         </div>
         <Image
           src={LOGO.wordmarkArWhite.src}
           width={LOGO.wordmarkArWhite.width}
           height={LOGO.wordmarkArWhite.height}
           alt="افيكتو"
-          className="mt-4 h-16 w-auto sm:h-20"
+          className="mt-5 h-16 w-auto sm:h-20"
           unoptimized
         />
 
-        <p className="mt-8 max-w-xl text-balance text-base leading-8 tracking-wide text-eficto-cream/80 sm:text-lg">
+        <p className="mt-16 max-w-md text-balance text-base font-light leading-9 text-eficto-cream/75 sm:text-lg">
           تجربة طهي فاخرة تُعيد تقديم المذاق الإيطالي الأصيل، حيث تُحضّر أطباقنا الكلاسيكية بشغف
           وعلى أصولها العريقة.
         </p>
 
-        <div className="mt-12">
+        <div className="mt-14">
           <LiveStatusBadge />
         </div>
 
-        <div className="mt-8 flex flex-row items-center gap-3 sm:gap-4">
+        <div className="mt-10 flex flex-row items-center gap-4">
           <Link
             href="/waitlist?location=indoor"
-            className="rounded-full bg-eficto-gold px-6 py-3.5 text-sm font-medium text-eficto-green-dark shadow-premium transition-all duration-300 ease-soft hover:scale-[1.03] hover:shadow-elegant active:scale-[0.97] sm:px-9"
+            className="rounded-2xl bg-eficto-gold px-7 py-4 text-sm text-eficto-green-dark shadow-premium transition-all duration-500 ease-soft hover:-translate-y-0.5 hover:shadow-elegant active:translate-y-0 active:scale-[0.98] sm:px-10"
           >
             طاولة داخلية
           </Link>
           <Link
             href="/waitlist?location=outdoor"
-            className="rounded-full border border-eficto-cream/40 bg-eficto-cream/[0.04] px-6 py-3.5 text-sm text-eficto-cream backdrop-blur-sm transition-all duration-300 ease-soft hover:border-eficto-gold hover:text-eficto-gold active:scale-[0.97] sm:px-9"
+            className="rounded-2xl border border-eficto-cream/25 px-7 py-4 text-sm text-eficto-cream/90 transition-all duration-500 ease-soft hover:border-eficto-gold/60 hover:text-eficto-gold active:scale-[0.98] sm:px-10"
           >
             طاولة خارجية
           </Link>

@@ -55,28 +55,28 @@ export function ReviewForm() {
 
   if (status === "success") {
     return (
-      <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-9 text-center shadow-elegant">
-        <p className="font-arabic-display text-3xl text-eficto-green">شكراً لتقييمك</p>
-        <p className="mt-3 text-sm text-eficto-green-dark/60">نسعد بخدمتكم دائماً في افيكتو</p>
+      <div className="rounded-[32px] bg-champagne p-12 text-center shadow-elegant">
+        <p className="font-arabic-display text-3xl font-normal text-eficto-green">شكراً لتقييمك</p>
+        <p className="mt-4 text-sm font-light leading-7 text-eficto-green-dark/55">نسعد بخدمتكم دائماً في افيكتو</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       <IdentityBadge fullName={identity.full_name} onChange={clear} />
 
-      <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 px-6 py-8 text-center shadow-premium">
-        <label className="block text-sm text-eficto-green-dark/70">تقييمك</label>
-        <div className="mt-4 flex items-center justify-center gap-2" dir="ltr">
+      <div className="rounded-[32px] bg-champagne px-8 py-10 text-center shadow-premium">
+        <label className="text-xs tracking-[0.15em] text-eficto-green-dark/55">تقييمك</label>
+        <div className="mt-6 flex items-center justify-center gap-3" dir="ltr">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
               type="button"
               onClick={() => setRating(n)}
               aria-label={`${n} نجوم`}
-              className={`text-5xl leading-none transition-all duration-300 ease-soft hover:scale-110 active:scale-95 ${
-                n <= rating ? "text-eficto-gold" : "text-eficto-gold/20"
+              className={`text-4xl leading-none transition-all duration-500 ease-soft hover:-translate-y-0.5 active:scale-90 ${
+                n <= rating ? "text-eficto-gold" : "text-eficto-gold/15"
               }`}
             >
               ★
@@ -86,11 +86,12 @@ export function ReviewForm() {
       </div>
 
       <div>
-        <label className="mb-2 block text-sm text-eficto-green-dark/80">تعليقك (اختياري)</label>
+        <label className="mb-3 block text-xs tracking-[0.1em] text-eficto-green-dark/60">تعليقك (اختياري)</label>
         <textarea
           name="comment"
           rows={4}
-          className="w-full rounded-2xl border border-eficto-gold/30 bg-white/60 px-5 py-4 leading-7 shadow-premium outline-none transition-all duration-300 ease-soft focus:border-eficto-gold focus:shadow-elegant"
+          placeholder="أخبرنا عن تجربتك..."
+          className="w-full rounded-[24px] bg-white/70 px-6 py-5 leading-8 text-eficto-green-dark shadow-premium outline-none transition-all duration-500 ease-soft placeholder:text-eficto-green-dark/30 focus:shadow-elegant"
         />
       </div>
 
@@ -99,7 +100,7 @@ export function ReviewForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full rounded-full bg-eficto-green py-4 text-sm font-medium text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.01] hover:shadow-elegant active:scale-[0.98] disabled:opacity-60"
+        className="w-full rounded-2xl bg-eficto-green py-[18px] text-sm text-eficto-cream shadow-premium transition-all duration-500 ease-soft hover:-translate-y-0.5 hover:shadow-elegant active:translate-y-0 active:scale-[0.99] disabled:opacity-60"
       >
         {status === "submitting" ? "جاري الإرسال…" : "إرسال التقييم"}
       </button>

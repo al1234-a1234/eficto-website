@@ -31,11 +31,13 @@ const config: Config = {
       },
       backgroundImage: {
         arch: "radial-gradient(120% 120% at 50% 0%, rgba(203,169,125,0.18) 0%, rgba(30,74,52,0) 60%)",
+        forest: "linear-gradient(160deg, #17401F 0%, #235C31 55%, #102B17 100%)",
+        champagne: "linear-gradient(180deg, #FFFFFF 0%, #F8F3EC 100%)",
       },
       boxShadow: {
-        soft: "0 20px 60px -20px rgba(19, 47, 33, 0.45)",
-        elegant: "0 16px 48px -18px rgba(23, 64, 31, 0.28)",
-        premium: "0 6px 24px -8px rgba(23, 64, 31, 0.16)",
+        soft: "0 24px 70px -24px rgba(16, 43, 23, 0.4)",
+        elegant: "0 20px 56px -22px rgba(16, 43, 23, 0.22)",
+        premium: "0 10px 32px -12px rgba(16, 43, 23, 0.1)",
       },
       transitionTimingFunction: {
         soft: "cubic-bezier(0.22, 1, 0.36, 1)",

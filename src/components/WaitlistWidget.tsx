@@ -144,9 +144,9 @@ export function WaitlistWidget() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 p-7 text-center shadow-premium">
-        <p className="text-sm text-eficto-green-dark/60">الحالة الآن</p>
-        <p className="mt-3 font-arabic-display text-2xl text-eficto-green">
+      <div className="rounded-[32px] bg-champagne p-8 text-center shadow-premium">
+        <p className="text-xs tracking-[0.1em] text-eficto-green-dark/55">الحالة الآن</p>
+        <p className="mt-4 font-arabic-display text-2xl font-normal text-eficto-green">
           {waitingCount === null
             ? "جاري التحقق…"
             : waitingCount === 0
@@ -156,17 +156,17 @@ export function WaitlistWidget() {
       </div>
 
       {myEntry ? (
-        <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-8 text-center shadow-elegant">
-          <p className="text-sm text-eficto-green-dark/70">دورك</p>
-          <p className="mt-3 font-arabic-display text-6xl text-eficto-green">
+        <div className="rounded-[32px] bg-champagne p-10 text-center shadow-elegant">
+          <p className="text-xs tracking-[0.1em] text-eficto-green-dark/60">دورك</p>
+          <p className="mt-4 font-arabic-display text-6xl font-normal text-eficto-green">
             {myPosition ?? "…"}
           </p>
-          <p className="mt-3 text-xs text-eficto-green-dark/50">
+          <p className="mt-4 text-xs font-light text-eficto-green-dark/45">
             منذ {relativeMinutesSince(myEntry.joined_at)} دقيقة · {myEntry.party_size} أشخاص
           </p>
           <button
             onClick={handleLeave}
-            className="mt-6 rounded-full border border-eficto-alert/40 px-7 py-2.5 text-sm text-eficto-alert transition-all duration-300 ease-soft hover:bg-eficto-alert/10 active:scale-[0.97]"
+            className="mt-7 rounded-2xl border border-eficto-alert/30 px-8 py-3 text-sm text-eficto-alert transition-all duration-300 ease-soft hover:bg-eficto-alert/5 active:scale-[0.97]"
           >
             إلغاء الانتظار
           </button>
@@ -174,21 +174,21 @@ export function WaitlistWidget() {
       ) : !ready ? null : !identity ? (
         <IdentityForm onSubmit={save} />
       ) : (
-        <form onSubmit={handleJoin} className="space-y-6">
+        <form onSubmit={handleJoin} className="space-y-8">
           <IdentityBadge fullName={identity.full_name} onChange={clear} />
 
           <div>
-            <label className="mb-2.5 block text-sm text-eficto-green-dark/80">اختر المنطقة</label>
+            <label className="mb-3 block text-xs tracking-[0.1em] text-eficto-green-dark/60">اختر المنطقة</label>
             <div className="grid grid-cols-3 gap-3">
               {(["indoor", "outdoor", "any"] as WaitlistLocation[]).map((loc) => (
                 <button
                   key={loc}
                   type="button"
                   onClick={() => setLocation(loc)}
-                  className={`rounded-2xl border py-3.5 text-sm transition-all duration-300 ease-soft active:scale-[0.97] ${
+                  className={`rounded-2xl py-4 text-sm transition-all duration-300 ease-soft active:scale-[0.97] ${
                     location === loc
-                      ? "border-eficto-green bg-eficto-green text-eficto-cream shadow-premium"
-                      : "border-eficto-gold/30 bg-white/70 text-eficto-green-dark/80"
+                      ? "bg-eficto-green text-eficto-cream shadow-premium"
+                      : "bg-white/70 text-eficto-green-dark/70 shadow-premium"
                   }`}
                 >
                   {LOCATION_LABELS[loc]}
@@ -198,17 +198,17 @@ export function WaitlistWidget() {
           </div>
 
           <div>
-            <label className="mb-2.5 block text-sm text-eficto-green-dark/80">عدد الأشخاص</label>
-            <div className="flex flex-wrap gap-2.5" dir="ltr">
+            <label className="mb-3 block text-xs tracking-[0.1em] text-eficto-green-dark/60">عدد الأشخاص</label>
+            <div className="flex flex-wrap gap-3" dir="ltr">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                 <button
                   key={n}
                   type="button"
                   onClick={() => setPartySize(n)}
-                  className={`flex h-12 w-12 items-center justify-center rounded-full border text-sm transition-all duration-300 ease-soft active:scale-[0.94] ${
+                  className={`flex h-12 w-12 items-center justify-center rounded-full text-sm transition-all duration-300 ease-soft active:scale-[0.94] ${
                     partySize === n
-                      ? "border-eficto-green bg-eficto-green text-eficto-cream shadow-premium"
-                      : "border-eficto-gold/30 bg-white/70 text-eficto-green-dark/80"
+                      ? "bg-eficto-green text-eficto-cream shadow-premium"
+                      : "bg-white/70 text-eficto-green-dark/70 shadow-premium"
                   }`}
                 >
                   {n}
@@ -222,7 +222,7 @@ export function WaitlistWidget() {
           <button
             type="submit"
             disabled={formStatus === "submitting"}
-            className="w-full rounded-full bg-eficto-green py-4 text-sm font-medium text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.01] hover:shadow-elegant active:scale-[0.98] disabled:opacity-60"
+            className="w-full rounded-2xl bg-eficto-green py-[18px] text-sm text-eficto-cream shadow-premium transition-all duration-500 ease-soft hover:-translate-y-0.5 hover:shadow-elegant active:translate-y-0 active:scale-[0.98] disabled:opacity-60"
           >
             {formStatus === "submitting" ? "جاري الانضمام…" : "انضم لقائمة الانتظار"}
           </button>

@@ -33,15 +33,12 @@ export function LiveStatusBadge() {
   const isBusy = (waitingCount ?? 0) > 0;
 
   return (
-    <Link
-      href="/waitlist"
-      className="group inline-flex items-center gap-2.5 rounded-full border border-eficto-gold/50 bg-eficto-green-dark/40 px-4 py-2 backdrop-blur transition-colors duration-300 ease-soft hover:border-eficto-gold"
-    >
+    <Link href="/waitlist" className="group inline-flex items-center gap-3">
       <span
-        className={`h-2 w-2 rounded-full ${isBusy ? "bg-eficto-alert" : "bg-eficto-light-status"}`}
+        className="h-[7px] w-[7px] shrink-0 rounded-full transition-transform duration-300 ease-soft group-hover:scale-125"
         style={{ backgroundColor: isBusy ? "#C4756B" : "#7FB58E" }}
       />
-      <span className="font-arabic-body text-sm text-eficto-cream/90">
+      <span className="font-arabic-body text-sm text-eficto-cream/75 underline decoration-eficto-cream/0 decoration-1 underline-offset-[6px] transition-all duration-300 ease-soft group-hover:text-eficto-cream group-hover:decoration-eficto-gold/60">
         {waitingCount === null
           ? "جاري التحقق من الحالة…"
           : isBusy

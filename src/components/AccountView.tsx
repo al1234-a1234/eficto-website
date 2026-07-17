@@ -83,21 +83,22 @@ export function AccountView() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="overflow-hidden rounded-[28px] bg-eficto-green-dark shadow-elegant">
-        <div className="flex flex-col items-center px-7 py-10 text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full border border-eficto-gold/40 bg-eficto-cream/5">
-            <span className="font-arabic-display text-3xl text-eficto-gold">
+    <div className="space-y-6">
+      <div className="overflow-hidden rounded-[32px] bg-forest shadow-elegant">
+        <div className="flex flex-col items-center px-8 py-14 text-center">
+          <div className="flex h-[84px] w-[84px] items-center justify-center rounded-full border border-eficto-gold/25">
+            <span className="font-arabic-display text-3xl font-normal text-eficto-gold">
               {identity.full_name.trim().charAt(0)}
             </span>
           </div>
-          <p className="mt-6 font-serif text-xl text-eficto-cream">{identity.full_name}</p>
-          <p dir="ltr" className="mt-1.5 text-sm text-eficto-cream/60">
+          <p className="mt-8 font-serif text-2xl font-normal text-eficto-cream">{identity.full_name}</p>
+          <p dir="ltr" className="mt-2 text-sm font-light text-eficto-cream/50">
             {identity.phone}
           </p>
+          <div className="divider-hairline mt-8 w-12" />
           <button
             onClick={clear}
-            className="mt-7 text-xs tracking-wide text-eficto-gold underline underline-offset-4 transition-colors hover:text-eficto-cream"
+            className="mt-8 text-xs tracking-[0.08em] text-eficto-gold/80 underline underline-offset-4 transition-colors duration-300 ease-soft hover:text-eficto-gold"
           >
             تسجيل بحساب آخر
           </button>
@@ -105,25 +106,25 @@ export function AccountView() {
       </div>
 
       {myEntry ? (
-        <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-8 text-center shadow-premium">
-          <p className="text-sm text-eficto-green-dark/70">دورك الحالي</p>
-          <p className="mt-3 font-arabic-display text-6xl text-eficto-green">{myPosition ?? "…"}</p>
-          <p className="mt-3 text-xs text-eficto-green-dark/50">
+        <div className="rounded-[32px] bg-champagne p-10 text-center shadow-elegant">
+          <p className="text-xs tracking-[0.1em] text-eficto-green-dark/55">دورك الحالي</p>
+          <p className="mt-4 font-arabic-display text-6xl font-normal text-eficto-green">{myPosition ?? "…"}</p>
+          <p className="mt-4 text-xs font-light text-eficto-green-dark/45">
             منذ {relativeMinutesSince(myEntry.joined_at)} دقيقة · {myEntry.party_size} أشخاص
           </p>
           <button
             onClick={handleLeave}
-            className="mt-6 rounded-full border border-eficto-alert/40 px-7 py-2.5 text-sm text-eficto-alert transition-all duration-300 ease-soft hover:bg-eficto-alert/10 active:scale-[0.97]"
+            className="mt-7 rounded-2xl border border-eficto-alert/30 px-8 py-3 text-sm text-eficto-alert transition-all duration-300 ease-soft hover:bg-eficto-alert/5 active:scale-[0.97]"
           >
             إلغاء الانتظار
           </button>
         </div>
       ) : (
-        <div className="rounded-[28px] border border-eficto-gold/25 bg-white/70 p-8 text-center shadow-premium">
-          <p className="text-sm text-eficto-green-dark/60">ما عندك حجز حالي</p>
+        <div className="rounded-[32px] bg-champagne p-10 text-center shadow-elegant">
+          <p className="text-sm font-light text-eficto-green-dark/55">ما عندك حجز حالي</p>
           <Link
             href="/waitlist"
-            className="mt-5 inline-block rounded-full bg-eficto-green px-7 py-3 text-sm text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.03] hover:shadow-elegant active:scale-[0.97]"
+            className="mt-6 inline-block rounded-2xl bg-eficto-green px-9 py-4 text-sm text-eficto-cream shadow-premium transition-all duration-500 ease-soft hover:-translate-y-0.5 hover:shadow-elegant active:translate-y-0 active:scale-[0.97]"
           >
             احجز طاولة الآن
           </Link>

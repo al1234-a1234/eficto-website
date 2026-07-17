@@ -9,10 +9,13 @@ html {
 body {
   background-color: #f8f3ec;
   color: #17401f;
+  font-weight: 300;
+  line-height: 1.8;
+  letter-spacing: 0.005em;
 }
 
 ::selection {
-  background-color: #d7b790;
+  background-color: #e7d4bd;
   color: #17401f;
 }
 
@@ -45,5 +48,10 @@ body {
 }
 
 .font-arabic-display {
-  font-weight: 600;
+  font-weight: 400;
+}
+
+.divider-hairline {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(215, 183, 144, 0.35), transparent);
 }
