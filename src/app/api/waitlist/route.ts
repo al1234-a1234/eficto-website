@@ -39,6 +39,19 @@ export async function POST(request: Request) {
   try {
     const supabase = createAdminClient();
 
+    const { data: statusRow } = await supabase
+      .from("eficto_settings")
+      .select("value")
+      .eq("key", "homepage_status")
+      .maybeSingle();
+
+    if (statusRow?.value === "full") {
+      return NextResponse.json(
+        { error: "الطاولات ممتلئة حالياً، يرجى الانتظار قليلاً والمحاولة بعد قليل" },
+        { status: 409 }
+      );
+    }
+
     if (location !== "any" && (await isLocationFull(supabase, location))) {
       return NextResponse.json(
         { error: location === "indoor" ? "الجلسة الداخلية ممتلئة حالياً" : "الجلسة الخارجية ممتلئة حالياً" },

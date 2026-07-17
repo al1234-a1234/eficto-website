@@ -29,10 +29,26 @@ export function WaitlistWidget() {
   const [error, setError] = useState<string | null>(null);
   const [location, setLocation] = useState<WaitlistLocation>("any");
   const [partySize, setPartySize] = useState(2);
+  const [homepageStatus, setHomepageStatus] = useState<"available" | "busy" | "full" | null>(null);
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("location");
     if (requested === "indoor" || requested === "outdoor") setLocation(requested);
+  }, []);
+
+  useEffect(() => {
+    async function loadStatus() {
+      try {
+        const res = await fetch("/api/status", { cache: "no-store" });
+        const data = await res.json();
+        setHomepageStatus(data.status ?? "available");
+      } catch {
+        setHomepageStatus("available");
+      }
+    }
+    loadStatus();
+    const interval = setInterval(loadStatus, 8000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -169,6 +185,11 @@ export function WaitlistWidget() {
           >
             إلغاء الانتظار
           </button>
+        </div>
+      ) : homepageStatus === "full" ? (
+        <div className="rounded-[28px] border border-eficto-alert/30 bg-eficto-alert/5 p-8 text-center shadow-elegant">
+          <p className="font-arabic-display text-lg text-eficto-alert">الطاولات ممتلئة حالياً</p>
+          <p className="mt-2 text-sm text-eficto-green-dark/60">يرجى الانتظار قليلاً والمحاولة بعد قليل</p>
         </div>
       ) : !ready ? null : !identity ? (
         <IdentityForm onSubmit={save} />
