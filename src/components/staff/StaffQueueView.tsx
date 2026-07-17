@@ -24,10 +24,18 @@ type ReservationRow = {
 
 const LOCATION_LABELS: Record<string, string> = { indoor: "داخلي", outdoor: "خارجي", any: "أي مكان" };
 
+const HOMEPAGE_STATUS_OPTIONS: { value: "available" | "busy" | "full"; label: string }[] = [
+  { value: "available", label: "متاحة الآن" },
+  { value: "busy", label: "مزدحم الآن" },
+  { value: "full", label: "غير متاحة الآن" },
+];
+
 export function StaffQueueView() {
   const [waitlist, setWaitlist] = useState<WaitlistRow[]>([]);
   const [reservations, setReservations] = useState<ReservationRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [homepageStatus, setHomepageStatus] = useState<"available" | "busy" | "full" | null>(null);
+  const [statusSaving, setStatusSaving] = useState(false);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/staff/queue", { cache: "no-store" });
@@ -38,11 +46,33 @@ export function StaffQueueView() {
     setLoading(false);
   }, []);
 
+  const loadHomepageStatus = useCallback(async () => {
+    const res = await fetch("/api/status", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    setHomepageStatus(data.status ?? "available");
+  }, []);
+
   useEffect(() => {
     load();
+    loadHomepageStatus();
     const interval = setInterval(load, 5000);
     return () => clearInterval(interval);
-  }, [load]);
+  }, [load, loadHomepageStatus]);
+
+  async function updateHomepageStatus(value: "available" | "busy" | "full") {
+    setStatusSaving(true);
+    setHomepageStatus(value);
+    try {
+      await fetch("/api/staff/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: value }),
+      });
+    } finally {
+      setStatusSaving(false);
+    }
+  }
 
   async function setStatus(id: string, status: "seated" | "left") {
     setWaitlist((prev) => prev.filter((r) => r.id !== id));
@@ -60,6 +90,29 @@ export function StaffQueueView() {
 
   return (
     <div className="mt-8 space-y-10">
+      <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
+        <h2 className="font-serif text-lg text-eficto-green-dark">حالة الموقع الرئيسي</h2>
+        <p className="mt-1 text-xs text-eficto-green-dark/50">
+          هذا اللي يشوفه الزوار بالصفحة الرئيسية — حدّثه حسب تقديرك الفعلي للازدحام
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {HOMEPAGE_STATUS_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => updateHomepageStatus(opt.value)}
+              disabled={statusSaving}
+              className={`rounded-full px-4 py-2 text-xs transition-colors disabled:opacity-50 ${
+                homepageStatus === opt.value
+                  ? "bg-eficto-green text-eficto-cream"
+                  : "border border-eficto-gold/30 text-eficto-green-dark/70 hover:border-eficto-gold"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div>
         <h2 className="font-serif text-lg text-eficto-green-dark">قائمة الانتظار ({waitlist.length})</h2>
         <div className="mt-3 space-y-3">
