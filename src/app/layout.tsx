@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Amiri, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Fraunces, Cairo, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -14,19 +14,17 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-// Elegant Naskh-style Arabic serif for display headings — editorial and unhurried,
-// the opposite register of a geometric UI sans.
-const amiri = Amiri({
+// Clean, modern Arabic — reads as a real product, not a decorative invitation.
+const cairo = Cairo({
   subsets: ["arabic"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
+  weight: ["500", "600", "700"],
   variable: "--font-arabic-display",
   display: "swap",
 });
 
 const plexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
-  weight: ["300", "400", "500"],
+  weight: ["300", "400", "500", "600"],
   variable: "--font-arabic-body",
   display: "swap",
 });
@@ -39,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${fraunces.variable} ${amiri.variable} ${plexArabic.variable}`}>
+    <html lang="ar" dir="rtl" className={`${fraunces.variable} ${cairo.variable} ${plexArabic.variable}`}>
       <body className="font-arabic-body bg-eficto-ivory text-eficto-green-dark antialiased">
         <SiteHeader />
         <main>{children}</main>
