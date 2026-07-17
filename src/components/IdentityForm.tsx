@@ -14,24 +14,24 @@ export function IdentityForm({ onSubmit }: { onSubmit: (identity: CustomerIdenti
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6 rounded-[28px] border border-eficto-gold/25 bg-white/60 p-7 shadow-premium">
       <div>
-        <p className="font-serif text-lg text-eficto-green-dark">قبل ما نكمل، عرّفنا عليك</p>
-        <p className="mt-1 text-sm text-eficto-green-dark/60">اسمك ورقم جوالك يُحفظان لحسابك ولا تحتاج تكتبهم مرة ثانية</p>
+        <p className="font-serif text-xl text-eficto-green-dark">قبل ما نكمل، عرّفنا عليك</p>
+        <p className="mt-2 text-sm leading-6 text-eficto-green-dark/60">اسمك ورقم جوالك يُحفظان لحسابك ولا تحتاج تكتبهم مرة ثانية</p>
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">الاسم الكامل</label>
+        <label className="mb-2 block text-sm text-eficto-green-dark/80">الاسم الكامل</label>
         <input
           name="full_name"
           required
           minLength={2}
-          className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
+          className="w-full rounded-2xl border border-eficto-gold/40 bg-white/80 px-5 py-3.5 outline-none transition-all duration-300 ease-soft focus:border-eficto-gold focus:shadow-premium"
         />
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">رقم الجوال</label>
+        <label className="mb-2 block text-sm text-eficto-green-dark/80">رقم الجوال</label>
         <input
           name="phone"
           type="tel"
@@ -39,13 +39,13 @@ export function IdentityForm({ onSubmit }: { onSubmit: (identity: CustomerIdenti
           placeholder="05XXXXXXXX"
           required
           pattern="^(?:\+966|0)5\d{8}$"
-          className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 text-left outline-none transition-colors focus:border-eficto-gold"
+          className="w-full rounded-2xl border border-eficto-gold/40 bg-white/80 px-5 py-3.5 text-left outline-none transition-all duration-300 ease-soft focus:border-eficto-gold focus:shadow-premium"
         />
       </div>
 
       <button
         type="submit"
-        className="w-full rounded-full bg-eficto-green py-3.5 text-sm font-medium text-eficto-cream transition-transform duration-300 ease-soft hover:scale-[1.01]"
+        className="w-full rounded-full bg-eficto-green py-4 text-sm font-medium text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.01] hover:shadow-elegant active:scale-[0.98]"
       >
         متابعة
       </button>

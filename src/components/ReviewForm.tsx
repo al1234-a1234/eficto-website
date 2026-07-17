@@ -55,27 +55,29 @@ export function ReviewForm() {
 
   if (status === "success") {
     return (
-      <div className="rounded-2xl border border-eficto-gold/40 bg-white/70 p-8 text-center shadow-soft">
-        <p className="font-arabic-display text-2xl text-eficto-green">شكراً لتقييمك</p>
+      <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-9 text-center shadow-elegant">
+        <p className="font-arabic-display text-3xl text-eficto-green">شكراً لتقييمك</p>
         <p className="mt-3 text-sm text-eficto-green-dark/60">نسعد بخدمتكم دائماً في افيكتو</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <IdentityBadge fullName={identity.full_name} onChange={clear} />
 
-      <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">تقييمك</label>
-        <div className="flex items-center gap-1" dir="ltr">
+      <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 px-6 py-8 text-center shadow-premium">
+        <label className="block text-sm text-eficto-green-dark/70">تقييمك</label>
+        <div className="mt-4 flex items-center justify-center gap-2" dir="ltr">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
               type="button"
               onClick={() => setRating(n)}
               aria-label={`${n} نجوم`}
-              className={`text-3xl leading-none transition-colors ${n <= rating ? "text-eficto-gold" : "text-eficto-gold/25"}`}
+              className={`text-5xl leading-none transition-all duration-300 ease-soft hover:scale-110 active:scale-95 ${
+                n <= rating ? "text-eficto-gold" : "text-eficto-gold/20"
+              }`}
             >
               ★
             </button>
@@ -84,11 +86,11 @@ export function ReviewForm() {
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm text-eficto-green-dark/80">تعليقك (اختياري)</label>
+        <label className="mb-2 block text-sm text-eficto-green-dark/80">تعليقك (اختياري)</label>
         <textarea
           name="comment"
           rows={4}
-          className="w-full rounded-xl border border-eficto-gold/40 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
+          className="w-full rounded-2xl border border-eficto-gold/30 bg-white/60 px-5 py-4 leading-7 shadow-premium outline-none transition-all duration-300 ease-soft focus:border-eficto-gold focus:shadow-elegant"
         />
       </div>
 
@@ -97,7 +99,7 @@ export function ReviewForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full rounded-full bg-eficto-green py-3.5 text-sm font-medium text-eficto-cream transition-transform duration-300 ease-soft hover:scale-[1.01] disabled:opacity-60"
+        className="w-full rounded-full bg-eficto-green py-4 text-sm font-medium text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.01] hover:shadow-elegant active:scale-[0.98] disabled:opacity-60"
       >
         {status === "submitting" ? "جاري الإرسال…" : "إرسال التقييم"}
       </button>

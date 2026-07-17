@@ -83,39 +83,47 @@ export function AccountView() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-2xl border border-eficto-gold/25 bg-white/70 p-6 shadow-soft">
-        <p className="text-sm text-eficto-green-dark/60">الاسم</p>
-        <p className="mt-1 font-serif text-lg text-eficto-green-dark">{identity.full_name}</p>
-        <p className="mt-4 text-sm text-eficto-green-dark/60">رقم الجوال</p>
-        <p dir="ltr" className="mt-1 text-eficto-green-dark">
-          {identity.phone}
-        </p>
-        <button onClick={clear} className="mt-5 text-sm text-eficto-green underline">
-          تسجيل بحساب آخر
-        </button>
+    <div className="space-y-5">
+      <div className="overflow-hidden rounded-[28px] bg-eficto-green-dark shadow-elegant">
+        <div className="flex flex-col items-center px-7 py-10 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full border border-eficto-gold/40 bg-eficto-cream/5">
+            <span className="font-arabic-display text-3xl text-eficto-gold">
+              {identity.full_name.trim().charAt(0)}
+            </span>
+          </div>
+          <p className="mt-6 font-serif text-xl text-eficto-cream">{identity.full_name}</p>
+          <p dir="ltr" className="mt-1.5 text-sm text-eficto-cream/60">
+            {identity.phone}
+          </p>
+          <button
+            onClick={clear}
+            className="mt-7 text-xs tracking-wide text-eficto-gold underline underline-offset-4 transition-colors hover:text-eficto-cream"
+          >
+            تسجيل بحساب آخر
+          </button>
+        </div>
       </div>
 
       {myEntry ? (
-        <div className="rounded-2xl border border-eficto-gold/40 bg-eficto-green/5 p-6 text-center">
+        <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-8 text-center shadow-premium">
           <p className="text-sm text-eficto-green-dark/70">دورك الحالي</p>
-          <p className="mt-2 font-arabic-display text-5xl text-eficto-green">{myPosition ?? "…"}</p>
-          <p className="mt-2 text-xs text-eficto-green-dark/50">
+          <p className="mt-3 font-arabic-display text-6xl text-eficto-green">{myPosition ?? "…"}</p>
+          <p className="mt-3 text-xs text-eficto-green-dark/50">
             منذ {relativeMinutesSince(myEntry.joined_at)} دقيقة · {myEntry.party_size} أشخاص
           </p>
           <button
             onClick={handleLeave}
-            className="mt-5 rounded-full border border-eficto-alert/40 px-6 py-2 text-sm text-eficto-alert transition-colors hover:bg-eficto-alert/10"
+            className="mt-6 rounded-full border border-eficto-alert/40 px-7 py-2.5 text-sm text-eficto-alert transition-all duration-300 ease-soft hover:bg-eficto-alert/10 active:scale-[0.97]"
           >
             إلغاء الانتظار
           </button>
         </div>
       ) : (
-        <div className="rounded-2xl border border-eficto-gold/25 bg-white/70 p-6 text-center shadow-soft">
+        <div className="rounded-[28px] border border-eficto-gold/25 bg-white/70 p-8 text-center shadow-premium">
           <p className="text-sm text-eficto-green-dark/60">ما عندك حجز حالي</p>
           <Link
             href="/waitlist"
-            className="mt-4 inline-block rounded-full bg-eficto-green px-6 py-2.5 text-sm text-eficto-cream transition-transform hover:scale-105"
+            className="mt-5 inline-block rounded-full bg-eficto-green px-7 py-3 text-sm text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.03] hover:shadow-elegant active:scale-[0.97]"
           >
             احجز طاولة الآن
           </Link>

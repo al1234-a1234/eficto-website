@@ -64,7 +64,7 @@ export function SiteHeader() {
           </a>
           <Link
             href="/waitlist"
-            className="rounded-full border border-eficto-gold px-5 py-2 text-sm text-eficto-gold transition-colors duration-300 ease-soft hover:bg-eficto-gold hover:text-eficto-green-dark"
+            className="rounded-full border border-eficto-gold px-5 py-2.5 text-sm text-eficto-gold transition-all duration-300 ease-soft hover:bg-eficto-gold hover:text-eficto-green-dark active:scale-[0.96]"
           >
             احجز الآن
           </Link>

@@ -34,6 +34,8 @@ const config: Config = {
       },
       boxShadow: {
         soft: "0 20px 60px -20px rgba(19, 47, 33, 0.45)",
+        elegant: "0 16px 48px -18px rgba(23, 64, 31, 0.28)",
+        premium: "0 6px 24px -8px rgba(23, 64, 31, 0.16)",
       },
       transitionTimingFunction: {
         soft: "cubic-bezier(0.22, 1, 0.36, 1)",

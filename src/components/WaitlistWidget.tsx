@@ -143,10 +143,10 @@ export function WaitlistWidget() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="rounded-2xl border border-eficto-gold/30 bg-white/60 p-6 text-center shadow-soft">
+    <div className="space-y-6">
+      <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 p-7 text-center shadow-premium">
         <p className="text-sm text-eficto-green-dark/60">الحالة الآن</p>
-        <p className="mt-2 font-arabic-display text-2xl text-eficto-green">
+        <p className="mt-3 font-arabic-display text-2xl text-eficto-green">
           {waitingCount === null
             ? "جاري التحقق…"
             : waitingCount === 0
@@ -156,17 +156,17 @@ export function WaitlistWidget() {
       </div>
 
       {myEntry ? (
-        <div className="rounded-2xl border border-eficto-gold/40 bg-eficto-green/5 p-6 text-center">
+        <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-8 text-center shadow-elegant">
           <p className="text-sm text-eficto-green-dark/70">دورك</p>
-          <p className="mt-2 font-arabic-display text-5xl text-eficto-green">
+          <p className="mt-3 font-arabic-display text-6xl text-eficto-green">
             {myPosition ?? "…"}
           </p>
-          <p className="mt-2 text-xs text-eficto-green-dark/50">
+          <p className="mt-3 text-xs text-eficto-green-dark/50">
             منذ {relativeMinutesSince(myEntry.joined_at)} دقيقة · {myEntry.party_size} أشخاص
           </p>
           <button
             onClick={handleLeave}
-            className="mt-5 rounded-full border border-eficto-alert/40 px-6 py-2 text-sm text-eficto-alert transition-colors hover:bg-eficto-alert/10"
+            className="mt-6 rounded-full border border-eficto-alert/40 px-7 py-2.5 text-sm text-eficto-alert transition-all duration-300 ease-soft hover:bg-eficto-alert/10 active:scale-[0.97]"
           >
             إلغاء الانتظار
           </button>
@@ -174,21 +174,21 @@ export function WaitlistWidget() {
       ) : !ready ? null : !identity ? (
         <IdentityForm onSubmit={save} />
       ) : (
-        <form onSubmit={handleJoin} className="space-y-5">
+        <form onSubmit={handleJoin} className="space-y-6">
           <IdentityBadge fullName={identity.full_name} onChange={clear} />
 
           <div>
-            <label className="mb-1.5 block text-sm text-eficto-green-dark/80">اختر المنطقة</label>
+            <label className="mb-2.5 block text-sm text-eficto-green-dark/80">اختر المنطقة</label>
             <div className="grid grid-cols-3 gap-3">
               {(["indoor", "outdoor", "any"] as WaitlistLocation[]).map((loc) => (
                 <button
                   key={loc}
                   type="button"
                   onClick={() => setLocation(loc)}
-                  className={`rounded-xl border py-3 text-sm transition-colors ${
+                  className={`rounded-2xl border py-3.5 text-sm transition-all duration-300 ease-soft active:scale-[0.97] ${
                     location === loc
-                      ? "border-eficto-green bg-eficto-green text-eficto-cream"
-                      : "border-eficto-gold/40 bg-white/70 text-eficto-green-dark/80"
+                      ? "border-eficto-green bg-eficto-green text-eficto-cream shadow-premium"
+                      : "border-eficto-gold/30 bg-white/70 text-eficto-green-dark/80"
                   }`}
                 >
                   {LOCATION_LABELS[loc]}
@@ -198,17 +198,17 @@ export function WaitlistWidget() {
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm text-eficto-green-dark/80">عدد الأشخاص</label>
-            <div className="flex flex-wrap gap-2" dir="ltr">
+            <label className="mb-2.5 block text-sm text-eficto-green-dark/80">عدد الأشخاص</label>
+            <div className="flex flex-wrap gap-2.5" dir="ltr">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                 <button
                   key={n}
                   type="button"
                   onClick={() => setPartySize(n)}
-                  className={`flex h-11 w-11 items-center justify-center rounded-full border text-sm transition-colors ${
+                  className={`flex h-12 w-12 items-center justify-center rounded-full border text-sm transition-all duration-300 ease-soft active:scale-[0.94] ${
                     partySize === n
-                      ? "border-eficto-green bg-eficto-green text-eficto-cream"
-                      : "border-eficto-gold/40 bg-white/70 text-eficto-green-dark/80"
+                      ? "border-eficto-green bg-eficto-green text-eficto-cream shadow-premium"
+                      : "border-eficto-gold/30 bg-white/70 text-eficto-green-dark/80"
                   }`}
                 >
                   {n}
@@ -222,7 +222,7 @@ export function WaitlistWidget() {
           <button
             type="submit"
             disabled={formStatus === "submitting"}
-            className="w-full rounded-full bg-eficto-green py-3.5 text-sm font-medium text-eficto-cream transition-transform duration-300 ease-soft hover:scale-[1.01] disabled:opacity-60"
+            className="w-full rounded-full bg-eficto-green py-4 text-sm font-medium text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.01] hover:shadow-elegant active:scale-[0.98] disabled:opacity-60"
           >
             {formStatus === "submitting" ? "جاري الانضمام…" : "انضم لقائمة الانتظار"}
           </button>

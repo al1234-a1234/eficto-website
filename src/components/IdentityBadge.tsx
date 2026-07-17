@@ -6,11 +6,15 @@ export function IdentityBadge({
   onChange: () => void;
 }) {
   return (
-    <div className="mb-5 flex items-center justify-between rounded-xl border border-eficto-gold/30 bg-eficto-green/5 px-4 py-2.5 text-sm">
+    <div className="mb-6 flex items-center justify-between rounded-2xl border border-eficto-gold/25 bg-eficto-green/5 px-5 py-3.5 text-sm shadow-premium">
       <span className="text-eficto-green-dark/80">
         باسم <span className="font-medium text-eficto-green">{fullName}</span>
       </span>
-      <button type="button" onClick={onChange} className="text-eficto-green underline">
+      <button
+        type="button"
+        onClick={onChange}
+        className="text-eficto-green underline underline-offset-4 transition-colors hover:text-eficto-gold-deep"
+      >
         تغيير
       </button>
     </div>
