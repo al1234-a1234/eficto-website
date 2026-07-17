@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { formatArabicTime, relativeMinutesSince } from "@/lib/format";
+import { reservationWhatsAppLink, waitlistWhatsAppLink } from "@/lib/whatsapp";
 
 type Customer = { full_name: string; phone: string } | null;
 
@@ -132,18 +133,34 @@ export function StaffQueueView() {
                   </span>
                   <div>
                     <p className="font-serif text-eficto-green-dark">{row.eficto_customers?.full_name ?? "—"}</p>
-                    <p dir="ltr" className="text-xs text-eficto-green-dark/50">
-                      {row.eficto_customers?.phone}
-                    </p>
+                    {row.eficto_customers?.phone && (
+                      <a
+                        href={`tel:${row.eficto_customers.phone}`}
+                        dir="ltr"
+                        className="text-xs text-eficto-green underline decoration-eficto-green/30 underline-offset-2"
+                      >
+                        {row.eficto_customers.phone}
+                      </a>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="text-left text-sm text-eficto-green-dark/60">
                     <p>
                       {row.party_size} أشخاص · {LOCATION_LABELS[row.location]}
                     </p>
                     <p className="text-xs">منذ {relativeMinutesSince(row.joined_at)} دقيقة</p>
                   </div>
+                  {row.eficto_customers?.phone && (
+                    <a
+                      href={waitlistWhatsAppLink(row.eficto_customers.phone, row.eficto_customers.full_name ?? "")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full border border-[#25D366]/50 px-3 py-2 text-xs text-[#128C4A] transition-colors hover:bg-[#25D366]/10"
+                    >
+                      تذكير واتساب
+                    </a>
+                  )}
                   <button
                     onClick={() => setStatus(row.id, "seated")}
                     className="rounded-full bg-eficto-green px-4 py-2 text-xs text-eficto-cream transition-transform hover:scale-105"
@@ -178,6 +195,7 @@ export function StaffQueueView() {
                   <th className="px-5 py-3 text-right font-normal">الجوال</th>
                   <th className="px-5 py-3 text-right font-normal">الأشخاص</th>
                   <th className="px-5 py-3 text-right font-normal">الطاولة</th>
+                  <th className="px-5 py-3 text-right font-normal">تذكير</th>
                 </tr>
               </thead>
               <tbody>
@@ -187,13 +205,39 @@ export function StaffQueueView() {
                     <td className="px-5 py-3">{formatArabicTime(r.reservation_time)}</td>
                     <td className="px-5 py-3">{r.eficto_customers?.full_name ?? "—"}</td>
                     <td dir="ltr" className="px-5 py-3 text-left">
-                      {r.eficto_customers?.phone ?? "—"}
+                      {r.eficto_customers?.phone ? (
+                        <a
+                          href={`tel:${r.eficto_customers.phone}`}
+                          className="text-eficto-green underline decoration-eficto-green/30 underline-offset-2"
+                        >
+                          {r.eficto_customers.phone}
+                        </a>
+                      ) : (
+                        "—"
+                      )}
                     </td>
                     <td className="px-5 py-3">{r.party_size}</td>
                     <td className="px-5 py-3">
                       {r.eficto_tables
                         ? `${r.eficto_tables.table_number} (${LOCATION_LABELS[r.eficto_tables.location]})`
                         : "—"}
+                    </td>
+                    <td className="px-5 py-3">
+                      {r.eficto_customers?.phone && (
+                        <a
+                          href={reservationWhatsAppLink(
+                            r.eficto_customers.phone,
+                            r.eficto_customers.full_name ?? "",
+                            r.dailyNumber,
+                            formatArabicTime(r.reservation_time)
+                          )}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-full border border-[#25D366]/50 px-3 py-1.5 text-xs text-[#128C4A] transition-colors hover:bg-[#25D366]/10"
+                        >
+                          واتساب
+                        </a>
+                      )}
                     </td>
                   </tr>
                 ))}
