@@ -10,12 +10,11 @@ import { IdentityBadge } from "./IdentityBadge";
 
 const STORAGE_KEY = "eficto_waitlist_entry";
 
-type WaitlistLocation = "indoor" | "outdoor" | "any";
+type WaitlistLocation = "indoor" | "outdoor";
 type MyEntry = { id: string; joined_at: string; party_size: number };
 type FormStatus = "idle" | "submitting" | "error";
 
 const LOCATION_LABELS: Record<WaitlistLocation, string> = {
-  any: "أي مكان",
   indoor: "الداخل",
   outdoor: "الخارج",
 };
@@ -27,7 +26,7 @@ export function WaitlistWidget() {
   const [myPosition, setMyPosition] = useState<number | null>(null);
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [error, setError] = useState<string | null>(null);
-  const [location, setLocation] = useState<WaitlistLocation>("any");
+  const [location, setLocation] = useState<WaitlistLocation>("indoor");
   const [partySize, setPartySize] = useState(2);
   const [homepageStatus, setHomepageStatus] = useState<"available" | "busy" | "full" | null>(null);
 
@@ -199,8 +198,8 @@ export function WaitlistWidget() {
 
           <div>
             <label className="mb-2.5 block text-sm text-eficto-green-dark/80">اختر المنطقة</label>
-            <div className="grid grid-cols-3 gap-3">
-              {(["indoor", "outdoor", "any"] as WaitlistLocation[]).map((loc) => (
+            <div className="grid grid-cols-2 gap-3">
+              {(["indoor", "outdoor"] as WaitlistLocation[]).map((loc) => (
                 <button
                   key={loc}
                   type="button"

@@ -1,8 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 import { PhotoBackground } from "./PhotoBackground";
 import { LogoMark } from "./Logo";
 import { LiveStatusBadge } from "./LiveStatusBadge";
+import { LocationQueueStats } from "./LocationQueueStats";
 import { IMAGES, LOGO } from "@/lib/assets";
 
 export function Hero() {
@@ -54,20 +54,7 @@ export function Hero() {
           <LiveStatusBadge />
         </div>
 
-        <div className="mt-8 flex flex-row items-center gap-3 sm:gap-4">
-          <Link
-            href="/waitlist?location=indoor"
-            className="rounded-full bg-eficto-gold px-6 py-3.5 text-sm font-medium text-eficto-green-dark shadow-premium transition-all duration-300 ease-soft hover:scale-[1.03] hover:shadow-elegant active:scale-[0.97] sm:px-9"
-          >
-            طاولة داخلية
-          </Link>
-          <Link
-            href="/waitlist?location=outdoor"
-            className="rounded-full border border-eficto-cream/40 bg-eficto-cream/[0.04] px-6 py-3.5 text-sm text-eficto-cream backdrop-blur-sm transition-all duration-300 ease-soft hover:border-eficto-gold hover:text-eficto-gold active:scale-[0.97] sm:px-9"
-          >
-            طاولة خارجية
-          </Link>
-        </div>
+        <LocationQueueStats />
       </div>
     </section>
   );
