@@ -26,21 +26,30 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
     const supabase = createClient();
 
     async function refresh() {
-      const { data } = await supabase
-        .from("eficto_waitlist")
-        .select("id, party_size, location, status, joined_at, eficto_customers(full_name, phone)")
-        .eq("status", "waiting")
-        .order("joined_at", { ascending: true });
-      setRows((data ?? []) as unknown as WaitlistRow[]);
+      try {
+        const { data } = await supabase
+          .from("eficto_waitlist")
+          .select("id, party_size, location, status, joined_at, eficto_customers(full_name, phone)")
+          .eq("status", "waiting")
+          .order("joined_at", { ascending: true });
+        setRows((data ?? []) as unknown as WaitlistRow[]);
+      } catch {
+        // network/realtime hiccup — leave rows as-is, next refresh will retry
+      }
     }
 
-    const channel = supabase
-      .channel("admin-waitlist")
-      .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, refresh)
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      channel = supabase
+        .channel("admin-waitlist")
+        .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, refresh)
+        .subscribe();
+    } catch {
+      // realtime unavailable in this browser/context
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, []);
 

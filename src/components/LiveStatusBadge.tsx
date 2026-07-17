@@ -11,22 +11,31 @@ export function LiveStatusBadge() {
     const supabase = createClient();
 
     async function loadCount() {
-      const { count } = await supabase
-        .from("eficto_waitlist")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "waiting");
-      setWaitingCount(count ?? 0);
+      try {
+        const { count } = await supabase
+          .from("eficto_waitlist")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "waiting");
+        setWaitingCount(count ?? 0);
+      } catch {
+        setWaitingCount(0);
+      }
     }
 
     loadCount();
 
-    const channel = supabase
-      .channel("public-waitlist-status")
-      .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, loadCount)
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      channel = supabase
+        .channel("public-waitlist-status")
+        .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, loadCount)
+        .subscribe();
+    } catch {
+      // realtime unavailable in this browser/context — count still loads via loadCount() above
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, []);
 

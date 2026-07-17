@@ -33,35 +33,44 @@ export function AccountView() {
     const supabase = createClient();
 
     async function refresh() {
-      const { data: current } = await supabase
-        .from("eficto_waitlist")
-        .select("status")
-        .eq("id", myEntry!.id)
-        .maybeSingle();
+      try {
+        const { data: current } = await supabase
+          .from("eficto_waitlist")
+          .select("status")
+          .eq("id", myEntry!.id)
+          .maybeSingle();
 
-      if (!current || current.status !== "waiting") {
-        safeRemoveItem(STORAGE_KEY);
-        setMyEntry(null);
-        setMyPosition(null);
-        return;
+        if (!current || current.status !== "waiting") {
+          safeRemoveItem(STORAGE_KEY);
+          setMyEntry(null);
+          setMyPosition(null);
+          return;
+        }
+
+        const { count: position } = await supabase
+          .from("eficto_waitlist")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "waiting")
+          .lte("joined_at", myEntry!.joined_at);
+        setMyPosition(position ?? null);
+      } catch {
+        // network/realtime hiccup — leave state as-is, next refresh will retry
       }
-
-      const { count: position } = await supabase
-        .from("eficto_waitlist")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "waiting")
-        .lte("joined_at", myEntry!.joined_at);
-      setMyPosition(position ?? null);
     }
 
     refresh();
-    const channel = supabase
-      .channel("account-waitlist")
-      .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, refresh)
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      channel = supabase
+        .channel("account-waitlist")
+        .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, refresh)
+        .subscribe();
+    } catch {
+      // realtime unavailable in this browser/context — refresh() above still ran once
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [myEntry]);
 
