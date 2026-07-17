@@ -23,20 +23,8 @@ export function LiveStatusBadge() {
     }
 
     loadCount();
-
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    try {
-      channel = supabase
-        .channel("public-waitlist-status")
-        .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, loadCount)
-        .subscribe();
-    } catch {
-      // realtime unavailable in this browser/context — count still loads via loadCount() above
-    }
-
-    return () => {
-      if (channel) supabase.removeChannel(channel);
-    };
+    const interval = setInterval(loadCount, 8000);
+    return () => clearInterval(interval);
   }, []);
 
   const isBusy = (waitingCount ?? 0) > 0;

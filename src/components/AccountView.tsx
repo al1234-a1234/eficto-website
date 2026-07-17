@@ -59,19 +59,8 @@ export function AccountView() {
     }
 
     refresh();
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    try {
-      channel = supabase
-        .channel("account-waitlist")
-        .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, refresh)
-        .subscribe();
-    } catch {
-      // realtime unavailable in this browser/context — refresh() above still ran once
-    }
-
-    return () => {
-      if (channel) supabase.removeChannel(channel);
-    };
+    const interval = setInterval(refresh, 6000);
+    return () => clearInterval(interval);
   }, [myEntry]);
 
   async function handleLeave() {

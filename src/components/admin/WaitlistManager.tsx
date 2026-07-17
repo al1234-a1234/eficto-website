@@ -38,19 +38,8 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
       }
     }
 
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    try {
-      channel = supabase
-        .channel("admin-waitlist")
-        .on("postgres_changes", { event: "*", schema: "public", table: "eficto_waitlist" }, refresh)
-        .subscribe();
-    } catch {
-      // realtime unavailable in this browser/context
-    }
-
-    return () => {
-      if (channel) supabase.removeChannel(channel);
-    };
+    const interval = setInterval(refresh, 6000);
+    return () => clearInterval(interval);
   }, []);
 
   async function setStatus(id: string, status: "seated" | "left") {
