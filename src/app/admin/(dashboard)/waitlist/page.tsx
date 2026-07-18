@@ -1,16 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
-import { WaitlistManager, type WaitlistRow } from "@/components/admin/WaitlistManager";
+import { WaitlistManager, type WaitlistRow, type SeatedRow } from "@/components/admin/WaitlistManager";
 import { LocationStatusToggle } from "@/components/admin/LocationStatusToggle";
 import { HomepageStatusControl } from "@/components/admin/HomepageStatusControl";
 
 export default async function AdminWaitlistPage() {
   const supabase = await createClient();
-  const [{ data }, { data: locationStatus }] = await Promise.all([
+  const [{ data }, { data: seatedData }, { data: locationStatus }] = await Promise.all([
     supabase
       .from("eficto_waitlist")
       .select("id, party_size, location, status, joined_at, occasion, eficto_customers(full_name, phone)")
       .eq("status", "waiting")
       .order("joined_at", { ascending: true }),
+    supabase
+      .from("eficto_waitlist")
+      .select("id, party_size, location, seated_at, eficto_customers(full_name, phone)")
+      .eq("status", "seated")
+      .order("seated_at", { ascending: true }),
     supabase.from("eficto_location_status").select("location, is_full").order("location"),
   ]);
 
@@ -29,7 +34,10 @@ export default async function AdminWaitlistPage() {
         />
       </div>
 
-      <WaitlistManager initialRows={(data ?? []) as unknown as WaitlistRow[]} />
+      <WaitlistManager
+        initialRows={(data ?? []) as unknown as WaitlistRow[]}
+        initialSeatedRows={(seatedData ?? []) as unknown as SeatedRow[]}
+      />
     </div>
   );
 }

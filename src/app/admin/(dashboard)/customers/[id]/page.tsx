@@ -13,7 +13,12 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const LOCATION_LABELS: Record<string, string> = { indoor: "داخلي", outdoor: "خارجي", any: "أي مكان" };
-const WAITLIST_STATUS_LABELS: Record<string, string> = { waiting: "بالانتظار", seated: "جلس", left: "غادر" };
+const WAITLIST_STATUS_LABELS: Record<string, string> = {
+  waiting: "بالانتظار",
+  seated: "جالس الآن",
+  left: "غادر قبل الجلوس",
+  completed: "انتهت الجلسة",
+};
 
 export default async function CustomerProfilePage({ params }: { params: { id: string } }) {
   const supabase = await createClient();
@@ -27,7 +32,7 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
       .order("reservation_time", { ascending: false }),
     supabase
       .from("eficto_waitlist")
-      .select("id, party_size, location, status, joined_at, seated_at, left_at, occasion")
+      .select("id, party_size, location, status, joined_at, seated_at, left_at, completed_at, occasion")
       .eq("customer_id", params.id)
       .order("joined_at", { ascending: false }),
     getCustomerReviews(params.id),
@@ -90,7 +95,7 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
           {(waitlistEntries ?? []).length === 0 ? (
             <p className="p-6 text-center text-sm text-eficto-green-dark/50">لا يوجد سجل انتظار سابق</p>
           ) : (
-            <table className="w-full min-w-[760px] text-sm">
+            <table className="w-full min-w-[880px] text-sm">
               <thead className="bg-eficto-cream/60 text-eficto-green-dark/60">
                 <tr>
                   <th className="px-5 py-3 text-right font-normal">وقت الانضمام</th>
@@ -99,6 +104,7 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
                   <th className="px-5 py-3 text-right font-normal">الحالة</th>
                   <th className="px-5 py-3 text-right font-normal">وقت الجلوس</th>
                   <th className="px-5 py-3 text-right font-normal">وقت الإلغاء</th>
+                  <th className="px-5 py-3 text-right font-normal">وقت انتهاء الجلسة</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,6 +126,9 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
                     </td>
                     <td className="px-5 py-3 text-xs text-eficto-green-dark/50">
                       {w.left_at ? formatArabicDateTime(w.left_at) : "—"}
+                    </td>
+                    <td className="px-5 py-3 text-xs text-eficto-green-dark/50">
+                      {w.completed_at ? formatArabicDateTime(w.completed_at) : "—"}
                     </td>
                   </tr>
                 ))}

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatArabicTime, relativeMinutesSince } from "@/lib/format";
 import { reservationWhatsAppLink, waitlistWhatsAppLink } from "@/lib/whatsapp";
+import { LONG_SEAT_ALERT_MINUTES } from "@/lib/analytics";
 
 type Customer = { full_name: string; phone: string } | null;
 
@@ -12,6 +13,14 @@ type WaitlistRow = {
   location: "indoor" | "outdoor" | "any";
   joined_at: string;
   occasion: string | null;
+  eficto_customers: Customer;
+};
+
+type SeatedRow = {
+  id: string;
+  party_size: number;
+  location: "indoor" | "outdoor" | "any";
+  seated_at: string;
   eficto_customers: Customer;
 };
 
@@ -34,6 +43,7 @@ const HOMEPAGE_STATUS_OPTIONS: { value: "available" | "busy" | "full"; label: st
 
 export function StaffQueueView() {
   const [waitlist, setWaitlist] = useState<WaitlistRow[]>([]);
+  const [seated, setSeated] = useState<SeatedRow[]>([]);
   const [reservations, setReservations] = useState<ReservationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [homepageStatus, setHomepageStatus] = useState<"available" | "busy" | "full" | null>(null);
@@ -44,6 +54,7 @@ export function StaffQueueView() {
     if (!res.ok) return;
     const data = await res.json();
     setWaitlist(data.waitlist ?? []);
+    setSeated(data.seated ?? []);
     setReservations(data.reservations ?? []);
     setLoading(false);
   }, []);
@@ -79,8 +90,9 @@ export function StaffQueueView() {
     }
   }
 
-  async function setStatus(id: string, status: "seated" | "left") {
+  async function setStatus(id: string, status: "seated" | "left" | "completed") {
     setWaitlist((prev) => prev.filter((r) => r.id !== id));
+    setSeated((prev) => prev.filter((r) => r.id !== id));
     await fetch("/api/staff/waitlist", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -187,6 +199,46 @@ export function StaffQueueView() {
                 </div>
               </div>
             ))
+          )}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-serif text-lg text-eficto-green-dark">الطاولات النشطة الآن ({seated.length})</h2>
+        <div className="mt-3 space-y-3">
+          {seated.length === 0 ? (
+            <p className="rounded-2xl border border-eficto-gold/25 bg-white p-6 text-center text-sm text-eficto-green-dark/50 shadow-soft">
+              لا توجد طاولات مشغولة حالياً
+            </p>
+          ) : (
+            seated.map((row) => {
+              const elapsed = relativeMinutesSince(row.seated_at);
+              const longSeated = elapsed >= LONG_SEAT_ALERT_MINUTES;
+              return (
+                <div
+                  key={row.id}
+                  className={`flex items-center justify-between rounded-2xl border p-5 shadow-soft ${
+                    longSeated ? "border-eficto-alert/50 bg-eficto-alert/5" : "border-eficto-gold/25 bg-white"
+                  }`}
+                >
+                  <div>
+                    <p className="font-serif text-eficto-green-dark">{row.eficto_customers?.full_name ?? "—"}</p>
+                    <p className="text-xs text-eficto-green-dark/60">
+                      {row.party_size} أشخاص · {LOCATION_LABELS[row.location]}
+                    </p>
+                    <p className={`mt-1 text-xs ${longSeated ? "text-eficto-alert" : "text-eficto-green-dark/50"}`}>
+                      {longSeated ? `جالسة منذ ${elapsed} دقيقة — طالت المدة` : `جالسة منذ ${elapsed} دقيقة`}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setStatus(row.id, "completed")}
+                    className="rounded-full bg-eficto-green px-4 py-2 text-xs text-eficto-cream transition-transform hover:scale-105"
+                  >
+                    أنهى الجلسة
+                  </button>
+                </div>
+              );
+            })
           )}
         </div>
       </div>

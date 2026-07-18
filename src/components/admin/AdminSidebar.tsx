@@ -14,6 +14,7 @@ import {
   StarIcon,
   ChartIcon,
   GearIcon,
+  BellIcon,
 } from "@/components/icons";
 
 const LINKS: { href: string; label: string; exact?: boolean; icon: ComponentType<{ className?: string }> }[] = [
@@ -21,6 +22,7 @@ const LINKS: { href: string; label: string; exact?: boolean; icon: ComponentType
   { href: "/admin/reservations", label: "الحجوزات", icon: CalendarIcon },
   { href: "/admin/waitlist", label: "الانتظار", icon: ClockIcon },
   { href: "/admin/customers", label: "العملاء", icon: UsersIcon },
+  { href: "/admin/recall", label: "استرجاع العملاء", icon: BellIcon },
   { href: "/admin/reviews", label: "التقييمات", icon: StarIcon },
   { href: "/admin/reports", label: "التقارير", icon: ChartIcon },
   { href: "/admin/settings", label: "الإعدادات", icon: GearIcon },

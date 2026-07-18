@@ -1,5 +1,5 @@
 export type ReservationStatus = "confirmed" | "cancelled" | "completed" | "no_show";
-export type WaitlistStatus = "waiting" | "seated" | "left";
+export type WaitlistStatus = "waiting" | "seated" | "left" | "completed";
 export type TableLocation = "indoor" | "outdoor";
 
 export interface Customer {

@@ -4,14 +4,23 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { relativeMinutesSince } from "@/lib/format";
 import { waitlistWhatsAppLink } from "@/lib/whatsapp";
+import { LONG_SEAT_ALERT_MINUTES } from "@/lib/analytics";
 
 export interface WaitlistRow {
   id: string;
   party_size: number;
   location: "indoor" | "outdoor" | "any";
-  status: "waiting" | "seated" | "left";
+  status: "waiting" | "seated" | "left" | "completed";
   joined_at: string;
   occasion: string | null;
+  eficto_customers: { full_name: string; phone: string } | null;
+}
+
+export interface SeatedRow {
+  id: string;
+  party_size: number;
+  location: "indoor" | "outdoor" | "any";
+  seated_at: string;
   eficto_customers: { full_name: string; phone: string } | null;
 }
 
@@ -21,20 +30,35 @@ const LOCATION_LABELS: Record<WaitlistRow["location"], string> = {
   any: "أي مكان",
 };
 
-export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] }) {
+export function WaitlistManager({
+  initialRows,
+  initialSeatedRows,
+}: {
+  initialRows: WaitlistRow[];
+  initialSeatedRows: SeatedRow[];
+}) {
   const [rows, setRows] = useState(initialRows.filter((r) => r.status === "waiting"));
+  const [seated, setSeated] = useState(initialSeatedRows);
 
   useEffect(() => {
     const supabase = createClient();
 
     async function refresh() {
       try {
-        const { data } = await supabase
-          .from("eficto_waitlist")
-          .select("id, party_size, location, status, joined_at, occasion, eficto_customers(full_name, phone)")
-          .eq("status", "waiting")
-          .order("joined_at", { ascending: true });
-        setRows((data ?? []) as unknown as WaitlistRow[]);
+        const [{ data: waiting }, { data: seatedData }] = await Promise.all([
+          supabase
+            .from("eficto_waitlist")
+            .select("id, party_size, location, status, joined_at, occasion, eficto_customers(full_name, phone)")
+            .eq("status", "waiting")
+            .order("joined_at", { ascending: true }),
+          supabase
+            .from("eficto_waitlist")
+            .select("id, party_size, location, seated_at, eficto_customers(full_name, phone)")
+            .eq("status", "seated")
+            .order("seated_at", { ascending: true }),
+        ]);
+        setRows((waiting ?? []) as unknown as WaitlistRow[]);
+        setSeated((seatedData ?? []) as unknown as SeatedRow[]);
       } catch {
         // network/realtime hiccup — leave rows as-is, next refresh will retry
       }
@@ -44,12 +68,14 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
     return () => clearInterval(interval);
   }, []);
 
-  async function setStatus(id: string, status: "seated" | "left") {
+  async function setStatus(id: string, status: "seated" | "left" | "completed") {
     setRows((prev) => prev.filter((r) => r.id !== id));
+    setSeated((prev) => prev.filter((r) => r.id !== id));
     const supabase = createClient();
-    const update: { status: string; seated_at?: string; left_at?: string } = { status };
+    const update: { status: string; seated_at?: string; left_at?: string; completed_at?: string } = { status };
     if (status === "seated") update.seated_at = new Date().toISOString();
     if (status === "left") update.left_at = new Date().toISOString();
+    if (status === "completed") update.completed_at = new Date().toISOString();
     await supabase.from("eficto_waitlist").update(update).eq("id", id);
 
     if (status === "seated") {
@@ -138,6 +164,42 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
           </div>
         </div>
       ))}
+
+      <h2 className="pt-4 font-serif text-lg text-eficto-green-dark">الطاولات النشطة الآن ({seated.length})</h2>
+      {seated.length === 0 ? (
+        <p className="rounded-2xl border border-eficto-gold/25 bg-white p-8 text-center text-sm text-eficto-green-dark/50 shadow-premium">
+          لا توجد طاولات مشغولة حالياً
+        </p>
+      ) : (
+        seated.map((row) => {
+          const elapsed = relativeMinutesSince(row.seated_at);
+          const longSeated = elapsed >= LONG_SEAT_ALERT_MINUTES;
+          return (
+            <div
+              key={row.id}
+              className={`flex items-center justify-between rounded-2xl border p-5 shadow-premium ${
+                longSeated ? "border-eficto-alert/50 bg-eficto-alert/5" : "border-eficto-gold/25 bg-white"
+              }`}
+            >
+              <div>
+                <p className="font-serif text-eficto-green-dark">{row.eficto_customers?.full_name ?? "—"}</p>
+                <p className="text-xs text-eficto-green-dark/60">
+                  {row.party_size} أشخاص · {LOCATION_LABELS[row.location]}
+                </p>
+                <p className={`mt-1 text-xs ${longSeated ? "text-eficto-alert" : "text-eficto-green-dark/50"}`}>
+                  {longSeated ? `جالسة منذ ${elapsed} دقيقة — طالت المدة` : `جالسة منذ ${elapsed} دقيقة`}
+                </p>
+              </div>
+              <button
+                onClick={() => setStatus(row.id, "completed")}
+                className="rounded-full bg-eficto-green px-4 py-2 text-xs text-eficto-cream transition-transform hover:scale-105"
+              >
+                أنهى الجلسة
+              </button>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 }

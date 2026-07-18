@@ -26,12 +26,17 @@ export async function GET() {
   const dayStart = startOfTodayRiyadhISO();
   const dayEnd = endOfTodayRiyadhISO();
 
-  const [{ data: waitlist }, { data: reservations }] = await Promise.all([
+  const [{ data: waitlist }, { data: seated }, { data: reservations }] = await Promise.all([
     supabase
       .from("eficto_waitlist")
       .select("id, party_size, location, status, joined_at, occasion, eficto_customers(full_name, phone)")
       .eq("status", "waiting")
       .order("joined_at", { ascending: true }),
+    supabase
+      .from("eficto_waitlist")
+      .select("id, party_size, location, seated_at, eficto_customers(full_name, phone)")
+      .eq("status", "seated")
+      .order("seated_at", { ascending: true }),
     supabase
       .from("eficto_reservations")
       .select(
@@ -52,6 +57,7 @@ export async function GET() {
 
   return NextResponse.json({
     waitlist: waitlist ?? [],
+    seated: seated ?? [],
     reservations: reservationsWithNumbers,
   });
 }

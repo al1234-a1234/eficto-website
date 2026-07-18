@@ -2,6 +2,7 @@ import Image from "next/image";
 import { PhotoBackground } from "./PhotoBackground";
 import { LogoMark } from "./Logo";
 import { LiveStatusBadge } from "./LiveStatusBadge";
+import { WaitEstimateBadge } from "./WaitEstimateBadge";
 import { LocationQueueStats } from "./LocationQueueStats";
 import { IMAGES, LOGO } from "@/lib/assets";
 
@@ -52,6 +53,7 @@ export function Hero() {
 
         <div className="mt-12">
           <LiveStatusBadge />
+          <WaitEstimateBadge />
         </div>
 
         <LocationQueueStats />

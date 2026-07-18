@@ -3,6 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { HomepageStatusControl } from "@/components/admin/HomepageStatusControl";
 import { CalendarIcon, ClockIcon, GridIcon, BellIcon } from "@/components/icons";
 import { formatArabicDate, formatArabicTime } from "@/lib/format";
+import {
+  computeDepartureStats,
+  computeAnomalyAlerts,
+  computeWaitEstimateMinutes,
+  getActiveSeatedEntries,
+  RECALL_INACTIVITY_DAYS,
+} from "@/lib/analytics";
 
 function startOfTodayRiyadhISO() {
   const now = new Date();
@@ -22,7 +29,8 @@ export default async function AdminOverviewPage() {
   const supabase = await createClient();
   const dayStart = startOfTodayRiyadhISO();
   const dayEnd = endOfTodayRiyadhISO();
-  const twentyOneDaysAgo = new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString();
+  const recallCutoff = new Date(Date.now() - RECALL_INACTIVITY_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   const [
     { count: todayCount },
@@ -30,6 +38,11 @@ export default async function AdminOverviewPage() {
     { data: tables },
     { data: reservationsToday },
     { data: quietRegulars },
+    departureToday,
+    departureWeek,
+    anomalyAlerts,
+    waitEstimateMinutes,
+    activeSeated,
   ] = await Promise.all([
     supabase
       .from("eficto_reservations")
@@ -50,10 +63,17 @@ export default async function AdminOverviewPage() {
       .from("eficto_customers")
       .select("id, full_name, visit_count, last_visit_at")
       .gte("visit_count", 2)
-      .lt("last_visit_at", twentyOneDaysAgo)
+      .lt("last_visit_at", recallCutoff)
       .order("visit_count", { ascending: false })
       .limit(5),
+    computeDepartureStats(supabase, dayStart),
+    computeDepartureStats(supabase, weekAgo),
+    computeAnomalyAlerts(supabase),
+    computeWaitEstimateMinutes(supabase),
+    getActiveSeatedEntries(supabase),
   ]);
+
+  const longSeated = activeSeated.filter((r) => r.isLongSeated);
 
   const now = Date.now();
   const windowMs = 2 * 60 * 60 * 1000;
@@ -82,7 +102,36 @@ export default async function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-3">
+      {(anomalyAlerts.length > 0 || longSeated.length > 0) && (
+        <div className="space-y-3">
+          {anomalyAlerts.map((alert) => (
+            <div
+              key={alert.metric}
+              className="flex items-center gap-3 rounded-2xl border border-eficto-alert/40 bg-eficto-alert/10 p-4"
+            >
+              <BellIcon className="h-4 w-4 shrink-0 text-eficto-alert" />
+              <p className="text-sm text-eficto-alert">{alert.message}</p>
+            </div>
+          ))}
+          {longSeated.length > 0 && (
+            <div className="flex items-start gap-3 rounded-2xl border border-eficto-alert/40 bg-eficto-alert/10 p-4">
+              <BellIcon className="mt-0.5 h-4 w-4 shrink-0 text-eficto-alert" />
+              <div className="text-sm text-eficto-alert">
+                <p>طاولات جالسة مدة طويلة غير معتادة:</p>
+                <ul className="mt-1 space-y-0.5 text-xs">
+                  {longSeated.map((r) => (
+                    <li key={r.id}>
+                      {r.party_size} أشخاص ({r.location === "indoor" ? "داخلي" : "خارجي"}) — منذ {r.elapsedMinutes} دقيقة
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           <div className="border-t-4 border-eficto-gold p-6">
             <div className="flex items-center gap-2.5 text-eficto-green-dark/60">
@@ -112,16 +161,57 @@ export default async function AdminOverviewPage() {
             </p>
           </div>
         </div>
+        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+          <div className="border-t-4 border-eficto-gold p-6">
+            <div className="flex items-center gap-2.5 text-eficto-green-dark/60">
+              <ClockIcon className="h-4 w-4" />
+              <p className="text-sm">الانتظار المتوقع الآن</p>
+            </div>
+            <p className="mt-2 font-arabic-display text-4xl text-eficto-green">
+              ~{waitEstimateMinutes}
+              <span className="text-lg text-eficto-green-dark/50"> د</span>
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-3">
         <HomepageStatusControl />
 
         <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           <div className="p-5">
-            <div className="flex items-center gap-2.5">
-              <BellIcon className="h-4 w-4 text-eficto-gold-deep" />
-              <h2 className="font-serif text-lg text-eficto-green-dark">عملاء يستحقون اهتمام</h2>
+            <h2 className="font-serif text-lg text-eficto-green-dark">معدل الانصراف</h2>
+            <p className="mt-1 text-xs text-eficto-green-dark/50">عملاء انضموا للانتظار ثم غادروا قبل الجلوس</p>
+            <div className="mt-4 flex items-end gap-6">
+              <div>
+                <p className="font-arabic-display text-3xl text-eficto-green">{departureToday.departureRatePct}%</p>
+                <p className="mt-1 text-xs text-eficto-green-dark/50">اليوم</p>
+              </div>
+              <div>
+                <p className="font-arabic-display text-xl text-eficto-green-dark/70">{departureWeek.departureRatePct}%</p>
+                <p className="mt-1 text-xs text-eficto-green-dark/50">هذا الأسبوع</p>
+              </div>
+            </div>
+            {departureWeek.wastedTables > 0 && (
+              <p className="mt-3 text-xs text-eficto-alert">
+                خسّرت ~{departureWeek.wastedTables} طاولة هذا الأسبوع بسبب الانصراف
+                {departureWeek.avgWaitAtDepartureMinutes !== null &&
+                  ` (متوسط انتظارهم قبل الانصراف: ${departureWeek.avgWaitAtDepartureMinutes} د)`}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+          <div className="p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <BellIcon className="h-4 w-4 text-eficto-gold-deep" />
+                <h2 className="font-serif text-lg text-eficto-green-dark">عملاء يستحقون اهتمام</h2>
+              </div>
+              <Link href="/admin/recall" className="text-xs text-eficto-green hover:underline">
+                عرض الكل ←
+              </Link>
             </div>
             <p className="mt-1 text-xs text-eficto-green-dark/50">عملاء متكررون ما زاروا من أكثر من ٣ أسابيع</p>
             <ul className="mt-4 divide-y divide-eficto-gold/10">
