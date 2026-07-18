@@ -20,8 +20,9 @@ export async function PATCH(request: Request) {
     .eq("id", id)
     .maybeSingle();
 
-  const update: { status: string; seated_at?: string } = { status };
+  const update: { status: string; seated_at?: string; left_at?: string } = { status };
   if (status === "seated") update.seated_at = new Date().toISOString();
+  if (status === "left") update.left_at = new Date().toISOString();
 
   const { error } = await supabase.from("eficto_waitlist").update(update).eq("id", id);
   if (error) return NextResponse.json({ error: "تعذر تحديث الحالة" }, { status: 500 });

@@ -12,16 +12,24 @@ const STATUS_LABELS: Record<string, string> = {
   no_show: "لم يحضر",
 };
 
+const LOCATION_LABELS: Record<string, string> = { indoor: "داخلي", outdoor: "خارجي", any: "أي مكان" };
+const WAITLIST_STATUS_LABELS: Record<string, string> = { waiting: "بالانتظار", seated: "جلس", left: "غادر" };
+
 export default async function CustomerProfilePage({ params }: { params: { id: string } }) {
   const supabase = await createClient();
 
-  const [{ data: customer }, { data: reservations }, reviews] = await Promise.all([
+  const [{ data: customer }, { data: reservations }, { data: waitlistEntries }, reviews] = await Promise.all([
     supabase.from("eficto_customers").select("*").eq("id", params.id).maybeSingle(),
     supabase
       .from("eficto_reservations")
       .select("id, reservation_time, party_size, status, created_at, status_changed_at, eficto_tables(table_number)")
       .eq("customer_id", params.id)
       .order("reservation_time", { ascending: false }),
+    supabase
+      .from("eficto_waitlist")
+      .select("id, party_size, location, status, joined_at, seated_at, left_at, occasion")
+      .eq("customer_id", params.id)
+      .order("joined_at", { ascending: false }),
     getCustomerReviews(params.id),
   ]);
 
@@ -73,6 +81,51 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
         <h2 className="font-serif text-lg text-eficto-green-dark">ملاحظات</h2>
         <div className="mt-3">
           <CustomerNotes customerId={customer.id} initialNotes={customer.notes} />
+        </div>
+      </div>
+
+      <div className="mt-8">
+        <h2 className="font-serif text-lg text-eficto-green-dark">سجل الانتظار</h2>
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+          {(waitlistEntries ?? []).length === 0 ? (
+            <p className="p-6 text-center text-sm text-eficto-green-dark/50">لا يوجد سجل انتظار سابق</p>
+          ) : (
+            <table className="w-full min-w-[760px] text-sm">
+              <thead className="bg-eficto-cream/60 text-eficto-green-dark/60">
+                <tr>
+                  <th className="px-5 py-3 text-right font-normal">وقت الانضمام</th>
+                  <th className="px-5 py-3 text-right font-normal">الأشخاص</th>
+                  <th className="px-5 py-3 text-right font-normal">المكان</th>
+                  <th className="px-5 py-3 text-right font-normal">الحالة</th>
+                  <th className="px-5 py-3 text-right font-normal">وقت الجلوس</th>
+                  <th className="px-5 py-3 text-right font-normal">وقت الإلغاء</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(waitlistEntries ?? []).map((w) => (
+                  <tr key={w.id} className="border-t border-eficto-gold/10">
+                    <td className="px-5 py-3">{formatArabicDateTime(w.joined_at)}</td>
+                    <td className="px-5 py-3">{w.party_size}</td>
+                    <td className="px-5 py-3">{LOCATION_LABELS[w.location] ?? w.location}</td>
+                    <td className="px-5 py-3">
+                      {WAITLIST_STATUS_LABELS[w.status] ?? w.status}
+                      {w.occasion && (
+                        <span className="mr-2 rounded-full bg-eficto-gold/15 px-2 py-0.5 text-[10px] text-eficto-gold-deep">
+                          🎉 {w.occasion}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3 text-xs text-eficto-green-dark/50">
+                      {w.seated_at ? formatArabicDateTime(w.seated_at) : "—"}
+                    </td>
+                    <td className="px-5 py-3 text-xs text-eficto-green-dark/50">
+                      {w.left_at ? formatArabicDateTime(w.left_at) : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 

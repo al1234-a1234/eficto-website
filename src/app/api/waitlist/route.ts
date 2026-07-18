@@ -106,7 +106,7 @@ export async function PATCH(request: Request) {
     const supabase = createAdminClient();
     const { error } = await supabase
       .from("eficto_waitlist")
-      .update({ status: "left" })
+      .update({ status: "left", left_at: new Date().toISOString() })
       .eq("id", id)
       .eq("status", "waiting");
     if (error) throw error;
