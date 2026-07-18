@@ -33,25 +33,29 @@ export function LocationQueueStats() {
     }
 
     load();
-    const interval = setInterval(load, 8000);
+    const interval = setInterval(load, 3000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4">
+    <div className="mt-8 flex flex-row items-center gap-3 sm:gap-4">
       <Link
         href="/waitlist?location=indoor"
-        className="rounded-2xl border border-eficto-cream/25 bg-eficto-cream/[0.04] px-6 py-5 text-center backdrop-blur-sm transition-all duration-300 ease-soft hover:border-eficto-gold active:scale-[0.97] sm:px-9"
+        className="flex flex-col items-center rounded-full bg-eficto-gold px-6 py-3 text-sm font-medium text-eficto-green-dark shadow-premium transition-all duration-300 ease-soft hover:scale-[1.03] hover:shadow-elegant active:scale-[0.97] sm:px-9"
       >
-        <p className="font-arabic-display text-3xl tabular-nums text-eficto-gold">{indoor ?? "…"}</p>
-        <p className="mt-1.5 text-xs text-eficto-cream/70">دور بالطاولة الداخلية</p>
+        <span>طاولة داخلية</span>
+        <span className="mt-0.5 font-arabic-display text-lg tabular-nums leading-none text-eficto-green-dark/80">
+          {indoor ?? "…"}
+        </span>
       </Link>
       <Link
         href="/waitlist?location=outdoor"
-        className="rounded-2xl border border-eficto-cream/25 bg-eficto-cream/[0.04] px-6 py-5 text-center backdrop-blur-sm transition-all duration-300 ease-soft hover:border-eficto-gold active:scale-[0.97] sm:px-9"
+        className="flex flex-col items-center rounded-full border border-eficto-cream/40 bg-eficto-cream/[0.04] px-6 py-3 text-sm text-eficto-cream backdrop-blur-sm transition-all duration-300 ease-soft hover:border-eficto-gold hover:text-eficto-gold active:scale-[0.97] sm:px-9"
       >
-        <p className="font-arabic-display text-3xl tabular-nums text-eficto-gold">{outdoor ?? "…"}</p>
-        <p className="mt-1.5 text-xs text-eficto-cream/70">دور بالطاولة الخارجية</p>
+        <span>طاولة خارجية</span>
+        <span className="mt-0.5 font-arabic-display text-lg tabular-nums leading-none text-eficto-cream/70">
+          {outdoor ?? "…"}
+        </span>
       </Link>
     </div>
   );
