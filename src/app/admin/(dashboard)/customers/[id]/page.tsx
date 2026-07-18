@@ -42,21 +42,21 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
+        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-premium">
           <p className="text-xs text-eficto-green-dark/50">عدد الزيارات</p>
           <p className="mt-1 font-arabic-display text-2xl text-eficto-green">{customer.visit_count}</p>
         </div>
-        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
+        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-premium">
           <p className="text-xs text-eficto-green-dark/50">آخر زيارة</p>
           <p className="mt-1 font-arabic-display text-lg text-eficto-green">
             {customer.last_visit_at ? formatArabicDate(customer.last_visit_at) : "—"}
           </p>
         </div>
-        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
+        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-premium">
           <p className="text-xs text-eficto-green-dark/50">عميل منذ</p>
           <p className="mt-1 font-arabic-display text-lg text-eficto-green">{formatArabicDate(customer.created_at)}</p>
         </div>
-        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
+        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-premium">
           <p className="text-xs text-eficto-green-dark/50">التقييم</p>
           {avgRating ? (
             <div className="mt-1.5 flex items-center gap-1.5">
@@ -78,7 +78,7 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
 
       <div className="mt-8">
         <h2 className="font-serif text-lg text-eficto-green-dark">سجل الحجوزات</h2>
-        <div className="mt-3 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-soft">
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           {(reservations ?? []).length === 0 ? (
             <p className="p-6 text-center text-sm text-eficto-green-dark/50">لا يوجد حجوزات سابقة</p>
           ) : (
@@ -112,12 +112,12 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
         <h2 className="font-serif text-lg text-eficto-green-dark">التقييمات</h2>
         <div className="mt-3 space-y-3">
           {reviews.length === 0 ? (
-            <p className="rounded-2xl border border-eficto-gold/25 bg-white p-6 text-center text-sm text-eficto-green-dark/50 shadow-soft">
+            <p className="rounded-2xl border border-eficto-gold/25 bg-white p-6 text-center text-sm text-eficto-green-dark/50 shadow-premium">
               لا توجد تقييمات بعد
             </p>
           ) : (
             reviews.map((r) => (
-              <div key={r.id} className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
+              <div key={r.id} className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-premium">
                 <div className="flex items-center justify-between">
                   {typeof r.rating === "number" && <StarRating rating={r.rating} />}
                   {r.review_date && (

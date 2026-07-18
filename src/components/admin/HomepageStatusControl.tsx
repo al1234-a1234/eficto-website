@@ -44,7 +44,7 @@ export function HomepageStatusControl() {
   }
 
   return (
-    <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
+    <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-premium">
       <h2 className="font-serif text-lg text-eficto-green-dark">حالة الموقع الرئيسي</h2>
       <p className="mt-1 text-xs text-eficto-green-dark/50">
         هذا اللي يشوفه الزوار بالصفحة الرئيسية — نفس التحكم الموجود بشاشة الاستقبال

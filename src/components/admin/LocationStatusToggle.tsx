@@ -27,7 +27,7 @@ export function LocationStatusToggle({ initialStatus }: { initialStatus: Locatio
       {status.map((s) => (
         <div
           key={s.location}
-          className="flex items-center justify-between rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft"
+          className="flex items-center justify-between rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-premium"
         >
           <div>
             <p className="font-serif text-eficto-green-dark">{LABELS[s.location]}</p>

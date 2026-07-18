@@ -68,7 +68,7 @@ export function ReservationsManager({
         ))}
       </div>
 
-      <div className="mt-5 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-soft">
+      <div className="mt-5 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
         <table className="w-full min-w-[720px] text-sm">
           <thead className="bg-eficto-cream/60 text-eficto-green-dark/60">
             <tr>

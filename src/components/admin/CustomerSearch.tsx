@@ -40,7 +40,7 @@ export function CustomerSearch({ initialCustomers }: { initialCustomers: Custome
         className="w-full max-w-md rounded-xl border border-eficto-gold/30 bg-white px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
       />
 
-      <div className="mt-5 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-soft">
+      <div className="mt-5 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
         {customers.length === 0 ? (
           <p className="p-8 text-center text-sm text-eficto-green-dark/50">لا يوجد عملاء</p>
         ) : (

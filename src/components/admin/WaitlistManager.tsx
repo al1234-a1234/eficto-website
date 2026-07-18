@@ -71,14 +71,14 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
   return (
     <div className="mt-6 space-y-3">
       {rows.length === 0 && (
-        <p className="rounded-2xl border border-eficto-gold/25 bg-white p-8 text-center text-sm text-eficto-green-dark/50 shadow-soft">
+        <p className="rounded-2xl border border-eficto-gold/25 bg-white p-8 text-center text-sm text-eficto-green-dark/50 shadow-premium">
           لا يوجد أحد بالانتظار حالياً
         </p>
       )}
       {rows.map((row, i) => (
         <div
           key={row.id}
-          className="flex items-center justify-between rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft"
+          className="flex items-center justify-between rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-premium"
         >
           <div className="flex items-center gap-4">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-eficto-green/10 font-arabic-display text-eficto-green">

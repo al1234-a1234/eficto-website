@@ -20,7 +20,7 @@ export function StaffPinSettings({ initialPin }: { initialPin: string }) {
   }
 
   return (
-    <div className="rounded-2xl border border-eficto-gold/25 bg-white p-6 shadow-soft">
+    <div className="rounded-2xl border border-eficto-gold/25 bg-white p-6 shadow-premium">
       <h2 className="font-serif text-lg text-eficto-green-dark">رمز دخول الطاقم</h2>
       <p className="mt-1 text-sm text-eficto-green-dark/60">
         شارك هذا الرمز مع فريق العمل ليدخلوا على قائمة اليوم من{" "}

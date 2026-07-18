@@ -55,19 +55,25 @@ export default async function AdminOverviewPage() {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
-        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-6 shadow-soft">
-          <p className="text-sm text-eficto-green-dark/60">حجوزات اليوم</p>
-          <p className="mt-2 font-arabic-display text-4xl text-eficto-green">{todayCount ?? 0}</p>
+        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+          <div className="border-t-4 border-eficto-gold p-6">
+            <p className="text-sm text-eficto-green-dark/60">حجوزات اليوم</p>
+            <p className="mt-2 font-arabic-display text-4xl text-eficto-green">{todayCount ?? 0}</p>
+          </div>
         </div>
-        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-6 shadow-soft">
-          <p className="text-sm text-eficto-green-dark/60">بالانتظار الآن</p>
-          <p className="mt-2 font-arabic-display text-4xl text-eficto-green">{waitingCount ?? 0}</p>
+        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+          <div className="border-t-4 border-eficto-gold p-6">
+            <p className="text-sm text-eficto-green-dark/60">بالانتظار الآن</p>
+            <p className="mt-2 font-arabic-display text-4xl text-eficto-green">{waitingCount ?? 0}</p>
+          </div>
         </div>
-        <div className="rounded-2xl border border-eficto-gold/25 bg-white p-6 shadow-soft">
-          <p className="text-sm text-eficto-green-dark/60">طاولات مشغولة الآن</p>
-          <p className="mt-2 font-arabic-display text-4xl text-eficto-green">
-            {occupiedTableIds.size} / {tables?.length ?? 0}
-          </p>
+        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+          <div className="border-t-4 border-eficto-gold p-6">
+            <p className="text-sm text-eficto-green-dark/60">طاولات مشغولة الآن</p>
+            <p className="mt-2 font-arabic-display text-4xl text-eficto-green">
+              {occupiedTableIds.size} / {tables?.length ?? 0}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -98,7 +104,7 @@ export default async function AdminOverviewPage() {
 
       <div>
         <h2 className="font-serif text-xl text-eficto-green-dark">حجوزات اليوم</h2>
-        <div className="mt-4 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-soft">
+        <div className="mt-4 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           {(reservationsToday ?? []).length === 0 ? (
             <p className="p-6 text-center text-sm text-eficto-green-dark/50">لا توجد حجوزات اليوم</p>
           ) : (

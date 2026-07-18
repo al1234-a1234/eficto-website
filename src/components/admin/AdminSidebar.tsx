@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/admin/reservations", label: "الحجوزات" },
   { href: "/admin/waitlist", label: "الانتظار" },
   { href: "/admin/customers", label: "العملاء" },
+  { href: "/admin/reviews", label: "التقييمات" },
   { href: "/admin/reports", label: "التقارير" },
   { href: "/admin/settings", label: "الإعدادات" },
 ];
@@ -66,7 +67,8 @@ export function AdminSidebar() {
         <div className="px-2">
           <LogoMark className="h-9" />
         </div>
-        <nav className="mt-10 flex flex-col gap-1.5">
+        <div className="mx-2 mt-6 h-px bg-gradient-to-r from-transparent via-eficto-gold/40 to-transparent" />
+        <nav className="mt-6 flex flex-col gap-1.5">
           {LINKS.map((link) => (
             <Link
               key={link.href}
