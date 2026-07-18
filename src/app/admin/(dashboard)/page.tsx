@@ -1,15 +1,11 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { HomepageStatusControl } from "@/components/admin/HomepageStatusControl";
+import { AdminInsights, AdminInsightsSkeleton } from "@/components/admin/AdminInsights";
 import { CalendarIcon, ClockIcon, GridIcon, BellIcon } from "@/components/icons";
 import { formatArabicDate, formatArabicTime } from "@/lib/format";
-import {
-  computeDepartureStats,
-  computeAnomalyAlerts,
-  computeWaitEstimateMinutes,
-  getActiveSeatedEntries,
-  RECALL_INACTIVITY_DAYS,
-} from "@/lib/analytics";
+import { RECALL_INACTIVITY_DAYS } from "@/lib/analytics";
 
 function startOfTodayRiyadhISO() {
   const now = new Date();
@@ -30,50 +26,35 @@ export default async function AdminOverviewPage() {
   const dayStart = startOfTodayRiyadhISO();
   const dayEnd = endOfTodayRiyadhISO();
   const recallCutoff = new Date(Date.now() - RECALL_INACTIVITY_DAYS * 24 * 60 * 60 * 1000).toISOString();
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [
-    { count: todayCount },
-    { count: waitingCount },
-    { data: tables },
-    { data: reservationsToday },
-    { data: quietRegulars },
-    departureToday,
-    departureWeek,
-    anomalyAlerts,
-    waitEstimateMinutes,
-    activeSeated,
-  ] = await Promise.all([
-    supabase
-      .from("eficto_reservations")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "confirmed")
-      .gte("reservation_time", dayStart)
-      .lt("reservation_time", dayEnd),
-    supabase.from("eficto_waitlist").select("id", { count: "exact", head: true }).eq("status", "waiting"),
-    supabase.from("eficto_tables").select("id, table_number, capacity, location").order("table_number"),
-    supabase
-      .from("eficto_reservations")
-      .select("id, table_id, reservation_time, party_size, eficto_customers(full_name)")
-      .eq("status", "confirmed")
-      .gte("reservation_time", dayStart)
-      .lt("reservation_time", dayEnd)
-      .order("reservation_time"),
-    supabase
-      .from("eficto_customers")
-      .select("id, full_name, visit_count, last_visit_at")
-      .gte("visit_count", 2)
-      .lt("last_visit_at", recallCutoff)
-      .order("visit_count", { ascending: false })
-      .limit(5),
-    computeDepartureStats(supabase, dayStart),
-    computeDepartureStats(supabase, weekAgo),
-    computeAnomalyAlerts(supabase),
-    computeWaitEstimateMinutes(supabase),
-    getActiveSeatedEntries(supabase),
-  ]);
-
-  const longSeated = activeSeated.filter((r) => r.isLongSeated);
+  // Only the fast, essential-for-first-paint queries are awaited here. The heavier analytics
+  // (departure rate, anomaly detection, wait estimate) live in <AdminInsights> and stream in
+  // separately via Suspense so navigating to the dashboard doesn't wait on all of it.
+  const [{ count: todayCount }, { count: waitingCount }, { data: tables }, { data: reservationsToday }, { data: quietRegulars }] =
+    await Promise.all([
+      supabase
+        .from("eficto_reservations")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "confirmed")
+        .gte("reservation_time", dayStart)
+        .lt("reservation_time", dayEnd),
+      supabase.from("eficto_waitlist").select("id", { count: "exact", head: true }).eq("status", "waiting"),
+      supabase.from("eficto_tables").select("id, table_number, capacity, location").order("table_number"),
+      supabase
+        .from("eficto_reservations")
+        .select("id, table_id, reservation_time, party_size, eficto_customers(full_name)")
+        .eq("status", "confirmed")
+        .gte("reservation_time", dayStart)
+        .lt("reservation_time", dayEnd)
+        .order("reservation_time"),
+      supabase
+        .from("eficto_customers")
+        .select("id, full_name, visit_count, last_visit_at")
+        .gte("visit_count", 2)
+        .lt("last_visit_at", recallCutoff)
+        .order("visit_count", { ascending: false })
+        .limit(5),
+    ]);
 
   const now = Date.now();
   const windowMs = 2 * 60 * 60 * 1000;
@@ -102,36 +83,7 @@ export default async function AdminOverviewPage() {
         </div>
       </div>
 
-      {(anomalyAlerts.length > 0 || longSeated.length > 0) && (
-        <div className="space-y-3">
-          {anomalyAlerts.map((alert) => (
-            <div
-              key={alert.metric}
-              className="flex items-center gap-3 rounded-2xl border border-eficto-alert/40 bg-eficto-alert/10 p-4"
-            >
-              <BellIcon className="h-4 w-4 shrink-0 text-eficto-alert" />
-              <p className="text-sm text-eficto-alert">{alert.message}</p>
-            </div>
-          ))}
-          {longSeated.length > 0 && (
-            <div className="flex items-start gap-3 rounded-2xl border border-eficto-alert/40 bg-eficto-alert/10 p-4">
-              <BellIcon className="mt-0.5 h-4 w-4 shrink-0 text-eficto-alert" />
-              <div className="text-sm text-eficto-alert">
-                <p>طاولات جالسة مدة طويلة غير معتادة:</p>
-                <ul className="mt-1 space-y-0.5 text-xs">
-                  {longSeated.map((r) => (
-                    <li key={r.id}>
-                      {r.party_size} أشخاص ({r.location === "indoor" ? "داخلي" : "خارجي"}) — منذ {r.elapsedMinutes} دقيقة
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-3">
         <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           <div className="border-t-4 border-eficto-gold p-6">
             <div className="flex items-center gap-2.5 text-eficto-green-dark/60">
@@ -161,46 +113,14 @@ export default async function AdminOverviewPage() {
             </p>
           </div>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
-          <div className="border-t-4 border-eficto-gold p-6">
-            <div className="flex items-center gap-2.5 text-eficto-green-dark/60">
-              <ClockIcon className="h-4 w-4" />
-              <p className="text-sm">الانتظار المتوقع الآن</p>
-            </div>
-            <p className="mt-2 font-arabic-display text-4xl text-eficto-green">
-              ~{waitEstimateMinutes}
-              <span className="text-lg text-eficto-green-dark/50"> د</span>
-            </p>
-          </div>
-        </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-3">
-        <HomepageStatusControl />
+      <Suspense fallback={<AdminInsightsSkeleton />}>
+        <AdminInsights />
+      </Suspense>
 
-        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
-          <div className="p-5">
-            <h2 className="font-serif text-lg text-eficto-green-dark">معدل الانصراف</h2>
-            <p className="mt-1 text-xs text-eficto-green-dark/50">عملاء انضموا للانتظار ثم غادروا قبل الجلوس</p>
-            <div className="mt-4 flex items-end gap-6">
-              <div>
-                <p className="font-arabic-display text-3xl text-eficto-green">{departureToday.departureRatePct}%</p>
-                <p className="mt-1 text-xs text-eficto-green-dark/50">اليوم</p>
-              </div>
-              <div>
-                <p className="font-arabic-display text-xl text-eficto-green-dark/70">{departureWeek.departureRatePct}%</p>
-                <p className="mt-1 text-xs text-eficto-green-dark/50">هذا الأسبوع</p>
-              </div>
-            </div>
-            {departureWeek.wastedTables > 0 && (
-              <p className="mt-3 text-xs text-eficto-alert">
-                خسّرت ~{departureWeek.wastedTables} طاولة هذا الأسبوع بسبب الانصراف
-                {departureWeek.avgWaitAtDepartureMinutes !== null &&
-                  ` (متوسط انتظارهم قبل الانصراف: ${departureWeek.avgWaitAtDepartureMinutes} د)`}
-              </p>
-            )}
-          </div>
-        </div>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <HomepageStatusControl />
 
         <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           <div className="p-5">

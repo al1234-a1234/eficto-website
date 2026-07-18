@@ -26,21 +26,38 @@ function average(values: number[]) {
 export async function computeWaitEstimateMinutes(supabase: SupabaseClient): Promise<number> {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const eightWeeksAgo = new Date(Date.now() - 56 * 24 * 60 * 60 * 1000).toISOString();
+  const now = riyadhNow();
+  const weekday = now.getUTCDay();
+  const hour = now.getUTCHours();
 
-  const [{ count: waitingCount }, { count: seatedCount }, { count: totalTables }, { data: turnoverRows }] =
-    await Promise.all([
-      supabase.from("eficto_waitlist").select("id", { count: "exact", head: true }).eq("status", "waiting"),
-      supabase.from("eficto_waitlist").select("id", { count: "exact", head: true }).eq("status", "seated"),
-      supabase.from("eficto_tables").select("id", { count: "exact", head: true }),
-      supabase
-        .from("eficto_waitlist")
-        .select("seated_at, completed_at")
-        .eq("status", "completed")
-        .not("seated_at", "is", null)
-        .not("completed_at", "is", null)
-        .gte("completed_at", thirtyDaysAgo)
-        .limit(500),
-    ]);
+  // All five queries are independent of one another — fire them together so the
+  // function costs one network round trip instead of stacking them sequentially.
+  const [
+    { count: waitingCount },
+    { count: seatedCount },
+    { count: totalTables },
+    { data: turnoverRows },
+    { data: historicalRows },
+  ] = await Promise.all([
+    supabase.from("eficto_waitlist").select("id", { count: "exact", head: true }).eq("status", "waiting"),
+    supabase.from("eficto_waitlist").select("id", { count: "exact", head: true }).eq("status", "seated"),
+    supabase.from("eficto_tables").select("id", { count: "exact", head: true }),
+    supabase
+      .from("eficto_waitlist")
+      .select("seated_at, completed_at")
+      .eq("status", "completed")
+      .not("seated_at", "is", null)
+      .not("completed_at", "is", null)
+      .gte("completed_at", thirtyDaysAgo)
+      .limit(500),
+    supabase
+      .from("eficto_waitlist")
+      .select("joined_at, seated_at")
+      .in("status", ["seated", "completed"])
+      .not("seated_at", "is", null)
+      .gte("joined_at", eightWeeksAgo)
+      .limit(1000),
+  ]);
 
   const turnoverSamples = (turnoverRows ?? []).map((r) => minutesBetween(r.seated_at as string, r.completed_at as string));
   const avgTurnover =
@@ -48,18 +65,6 @@ export async function computeWaitEstimateMinutes(supabase: SupabaseClient): Prom
 
   const availableTables = Math.max((totalTables ?? 0) - (seatedCount ?? 0), 1);
   const queueBasedEstimate = Math.ceil((waitingCount ?? 0) / availableTables) * avgTurnover;
-
-  const now = riyadhNow();
-  const weekday = now.getUTCDay();
-  const hour = now.getUTCHours();
-
-  const { data: historicalRows } = await supabase
-    .from("eficto_waitlist")
-    .select("joined_at, seated_at")
-    .in("status", ["seated", "completed"])
-    .not("seated_at", "is", null)
-    .gte("joined_at", eightWeeksAgo)
-    .limit(1000);
 
   const historicalSamples = (historicalRows ?? [])
     .filter((r) => {
@@ -118,6 +123,57 @@ export async function computeDepartureStats(
   const avgWaitAtDepartureMinutes = waitSamples.length > 0 ? Math.round(average(waitSamples) as number) : null;
 
   return { totalJoined, leftCount, departureRatePct, wastedTables, avgWaitAtDepartureMinutes };
+}
+
+function summarizeDeparture(
+  rows: { status: string; party_size: number; joined_at: string; left_at: string | null }[],
+  avgCapacity: number,
+  sinceISO: string
+): DepartureStats {
+  const scoped = rows.filter((r) => r.joined_at >= sinceISO);
+  const totalJoined = scoped.length;
+  const leftRows = scoped.filter((r) => r.status === "left");
+  const leftCount = leftRows.length;
+  const departureRatePct = totalJoined > 0 ? Math.round((leftCount / totalJoined) * 100) : 0;
+
+  const totalLostGuests = leftRows.reduce((sum, r) => sum + (r.party_size ?? 0), 0);
+  const wastedTables = Math.round((totalLostGuests / avgCapacity) * 10) / 10;
+
+  const waitSamples = leftRows
+    .filter((r) => r.left_at)
+    .map((r) => minutesBetween(r.joined_at, r.left_at as string));
+  const avgWaitAtDepartureMinutes = waitSamples.length > 0 ? Math.round(average(waitSamples) as number) : null;
+
+  return { totalJoined, leftCount, departureRatePct, wastedTables, avgWaitAtDepartureMinutes };
+}
+
+/**
+ * Same as computeDepartureStats but for two overlapping windows (e.g. today + this week) —
+ * fetches the wider window once and derives both from the same rows instead of two round trips.
+ */
+export async function computeDepartureStatsBoth(
+  supabase: SupabaseClient,
+  narrowSinceISO: string,
+  wideSinceISO: string
+): Promise<{ narrow: DepartureStats; wide: DepartureStats }> {
+  const [{ data: joinedRows }, { data: avgCapacityRows }] = await Promise.all([
+    supabase
+      .from("eficto_waitlist")
+      .select("status, party_size, joined_at, left_at")
+      .gte("joined_at", wideSinceISO)
+      .in("status", ["waiting", "seated", "left", "completed"])
+      .limit(3000),
+    supabase.from("eficto_tables").select("capacity"),
+  ]);
+
+  const rows = joinedRows ?? [];
+  const capacities = (avgCapacityRows ?? []).map((t) => t.capacity ?? 0).filter((c) => c > 0);
+  const avgCapacity = capacities.length > 0 ? (average(capacities) as number) : 4;
+
+  return {
+    narrow: summarizeDeparture(rows, avgCapacity, narrowSinceISO),
+    wide: summarizeDeparture(rows, avgCapacity, wideSinceISO),
+  };
 }
 
 export interface TurnoverStats {
