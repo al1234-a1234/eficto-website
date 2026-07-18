@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { relativeMinutesSince } from "@/lib/format";
+import { waitlistWhatsAppLink } from "@/lib/whatsapp";
 
 export interface WaitlistRow {
   id: string;
@@ -38,7 +39,7 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
       }
     }
 
-    const interval = setInterval(refresh, 6000);
+    const interval = setInterval(refresh, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -83,18 +84,34 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
             </span>
             <div>
               <p className="font-serif text-eficto-green-dark">{row.eficto_customers?.full_name ?? "—"}</p>
-              <p dir="ltr" className="text-xs text-eficto-green-dark/50">
-                {row.eficto_customers?.phone}
-              </p>
+              {row.eficto_customers?.phone && (
+                <a
+                  href={`tel:${row.eficto_customers.phone}`}
+                  dir="ltr"
+                  className="text-xs text-eficto-green underline decoration-eficto-green/30 underline-offset-2"
+                >
+                  {row.eficto_customers.phone}
+                </a>
+              )}
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="text-left text-sm text-eficto-green-dark/60">
               <p>
                 {row.party_size} أشخاص · {LOCATION_LABELS[row.location]}
               </p>
               <p className="text-xs">منذ {relativeMinutesSince(row.joined_at)} دقيقة</p>
             </div>
+            {row.eficto_customers?.phone && (
+              <a
+                href={waitlistWhatsAppLink(row.eficto_customers.phone, row.eficto_customers.full_name ?? "")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-[#25D366]/50 px-3 py-2 text-xs text-[#128C4A] transition-colors hover:bg-[#25D366]/10"
+              >
+                تذكير واتساب
+              </a>
+            )}
             <button
               onClick={() => setStatus(row.id, "seated")}
               className="rounded-full bg-eficto-green px-4 py-2 text-xs text-eficto-cream transition-transform hover:scale-105"

@@ -57,7 +57,10 @@ export function StaffQueueView() {
   useEffect(() => {
     load();
     loadHomepageStatus();
-    const interval = setInterval(load, 5000);
+    const interval = setInterval(() => {
+      load();
+      loadHomepageStatus();
+    }, 2500);
     return () => clearInterval(interval);
   }, [load, loadHomepageStatus]);
 
