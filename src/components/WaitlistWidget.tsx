@@ -15,7 +15,7 @@ type LocationPermState = "checking" | "granted" | "denied";
 const STORAGE_KEY = "eficto_waitlist_entry";
 
 type WaitlistLocation = "indoor" | "outdoor";
-type MyEntry = { id: string; joined_at: string; party_size: number };
+type MyEntry = { id: string; joined_at: string; party_size: number; location: WaitlistLocation };
 type FormStatus = "idle" | "submitting" | "error";
 
 const LOCATION_LABELS: Record<WaitlistLocation, string> = {
@@ -25,7 +25,8 @@ const LOCATION_LABELS: Record<WaitlistLocation, string> = {
 
 export function WaitlistWidget() {
   const { identity, ready, save, clear } = useCustomerIdentity();
-  const [waitingCount, setWaitingCount] = useState<number | null>(null);
+  const [indoorCount, setIndoorCount] = useState<number | null>(null);
+  const [outdoorCount, setOutdoorCount] = useState<number | null>(null);
   const [myEntry, setMyEntry] = useState<MyEntry | null>(null);
   const [myPosition, setMyPosition] = useState<number | null>(null);
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
@@ -94,11 +95,20 @@ export function WaitlistWidget() {
 
     async function refresh() {
       try {
-        const { count } = await supabase
-          .from("eficto_waitlist")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "waiting");
-        setWaitingCount(count ?? 0);
+        const [{ count: indoor }, { count: outdoor }] = await Promise.all([
+          supabase
+            .from("eficto_waitlist")
+            .select("id", { count: "exact", head: true })
+            .eq("status", "waiting")
+            .eq("location", "indoor"),
+          supabase
+            .from("eficto_waitlist")
+            .select("id", { count: "exact", head: true })
+            .eq("status", "waiting")
+            .eq("location", "outdoor"),
+        ]);
+        setIndoorCount(indoor ?? 0);
+        setOutdoorCount(outdoor ?? 0);
 
         if (myEntry) {
           const { data: current } = await supabase
@@ -118,6 +128,7 @@ export function WaitlistWidget() {
             .from("eficto_waitlist")
             .select("id", { count: "exact", head: true })
             .eq("status", "waiting")
+            .eq("location", myEntry.location)
             .lte("joined_at", myEntry.joined_at);
           setMyPosition(position ?? null);
         }
@@ -158,6 +169,7 @@ export function WaitlistWidget() {
           id: data.entry.id,
           joined_at: data.entry.joined_at,
           party_size: data.entry.party_size,
+          location: data.entry.location,
         };
         safeSetItem(STORAGE_KEY, JSON.stringify(entry));
         setMyEntry(entry);
@@ -188,19 +200,22 @@ export function WaitlistWidget() {
   return (
     <div className="space-y-6">
       <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 p-7 text-center shadow-premium">
-        <p className="text-sm text-eficto-green-dark/60">الحالة الآن</p>
-        <p className="mt-3 font-arabic-display text-2xl text-eficto-green">
-          {waitingCount === null
-            ? "جاري التحقق…"
-            : waitingCount === 0
-            ? "لا يوجد انتظار حالياً"
-            : `${waitingCount} ${waitingCount === 1 ? "شخص" : "أشخاص"} بالانتظار`}
-        </p>
+        <p className="text-sm text-eficto-green-dark/60">الحالة الآن — كل قسم له طابور مستقل</p>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div>
+            <p className="font-arabic-display text-2xl text-eficto-green">{indoorCount ?? "…"}</p>
+            <p className="mt-1 text-xs text-eficto-green-dark/50">بالانتظار — الداخل</p>
+          </div>
+          <div>
+            <p className="font-arabic-display text-2xl text-eficto-green">{outdoorCount ?? "…"}</p>
+            <p className="mt-1 text-xs text-eficto-green-dark/50">بالانتظار — الخارج</p>
+          </div>
+        </div>
       </div>
 
       {myEntry ? (
         <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-8 text-center shadow-elegant">
-          <p className="text-sm text-eficto-green-dark/70">دورك</p>
+          <p className="text-sm text-eficto-green-dark/70">دورك بطابور {LOCATION_LABELS[myEntry.location]}</p>
           <p className="mt-3 font-arabic-display text-6xl text-eficto-green">
             {myPosition ?? "…"}
           </p>

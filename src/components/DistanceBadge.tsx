@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SITE } from "@/lib/constants";
 import { formatDistanceAr, haversineMeters } from "@/lib/distance";
 
 type State = "idle" | "loading" | "found" | "denied";
 
+/**
+ * Location is requested only when the visitor explicitly asks — never on page load.
+ * Opening the homepage should never trigger a location permission prompt.
+ */
 export function DistanceBadge() {
   const [state, setState] = useState<State>("idle");
   const [distance, setDistance] = useState<string | null>(null);
@@ -27,15 +31,11 @@ export function DistanceBadge() {
     );
   }
 
-  useEffect(() => {
-    locate();
-  }, []);
-
   if (state === "found") {
     return <span className="text-xs text-eficto-green">تبعد عنك تقريباً {distance}</span>;
   }
 
-  if (state === "loading" || state === "idle") {
+  if (state === "loading") {
     return <span className="text-xs text-eficto-green-dark/40">جاري تحديد المسافة…</span>;
   }
 

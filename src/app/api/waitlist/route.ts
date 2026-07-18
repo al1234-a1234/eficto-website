@@ -88,6 +88,7 @@ export async function POST(request: Request) {
       .from("eficto_waitlist")
       .select("id", { count: "exact", head: true })
       .eq("status", "waiting")
+      .eq("location", location)
       .lte("joined_at", entry.joined_at);
 
     return NextResponse.json({ entry, position: position ?? 1 }, { status: 201 });

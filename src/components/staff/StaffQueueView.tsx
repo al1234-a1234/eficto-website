@@ -105,40 +105,20 @@ export function StaffQueueView() {
     return <p className="mt-8 text-center text-sm text-eficto-green-dark/50">جاري التحميل…</p>;
   }
 
-  return (
-    <div className="mt-8 space-y-10">
-      <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
-        <h2 className="font-serif text-lg text-eficto-green-dark">حالة الموقع الرئيسي</h2>
-        <p className="mt-1 text-xs text-eficto-green-dark/50">
-          هذا اللي يشوفه الزوار بالصفحة الرئيسية — حدّثه حسب تقديرك الفعلي للازدحام
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {HOMEPAGE_STATUS_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => updateHomepageStatus(opt.value)}
-              disabled={statusSaving}
-              className={`rounded-full px-4 py-2 text-xs transition-colors disabled:opacity-50 ${
-                homepageStatus === opt.value
-                  ? "bg-eficto-green text-eficto-cream"
-                  : "border border-eficto-gold/30 text-eficto-green-dark/70 hover:border-eficto-gold"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
+  function renderQueue(location: "indoor" | "outdoor") {
+    const rows = waitlist.filter((r) => r.location === location);
+    return (
       <div>
-        <h2 className="font-serif text-lg text-eficto-green-dark">قائمة الانتظار ({waitlist.length})</h2>
+        <h2 className="font-serif text-lg text-eficto-green-dark">
+          قائمة الانتظار — {LOCATION_LABELS[location]} ({rows.length})
+        </h2>
         <div className="mt-3 space-y-3">
-          {waitlist.length === 0 ? (
+          {rows.length === 0 ? (
             <p className="rounded-2xl border border-eficto-gold/25 bg-white p-6 text-center text-sm text-eficto-green-dark/50 shadow-soft">
               لا يوجد أحد بالانتظار حالياً
             </p>
           ) : (
-            waitlist.map((row, i) => (
+            rows.map((row, i) => (
               <div
                 key={row.id}
                 className="flex items-center justify-between rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft"
@@ -169,9 +149,7 @@ export function StaffQueueView() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-left text-sm text-eficto-green-dark/60">
-                    <p>
-                      {row.party_size} أشخاص · {LOCATION_LABELS[row.location]}
-                    </p>
+                    <p>{row.party_size} أشخاص</p>
                     <p className="text-xs">منذ {relativeMinutesSince(row.joined_at)} دقيقة</p>
                   </div>
                   {row.eficto_customers?.phone && (
@@ -201,6 +179,38 @@ export function StaffQueueView() {
             ))
           )}
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8 space-y-10">
+      <div className="rounded-2xl border border-eficto-gold/25 bg-white p-5 shadow-soft">
+        <h2 className="font-serif text-lg text-eficto-green-dark">حالة الموقع الرئيسي</h2>
+        <p className="mt-1 text-xs text-eficto-green-dark/50">
+          هذا اللي يشوفه الزوار بالصفحة الرئيسية — حدّثه حسب تقديرك الفعلي للازدحام
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {HOMEPAGE_STATUS_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => updateHomepageStatus(opt.value)}
+              disabled={statusSaving}
+              className={`rounded-full px-4 py-2 text-xs transition-colors disabled:opacity-50 ${
+                homepageStatus === opt.value
+                  ? "bg-eficto-green text-eficto-cream"
+                  : "border border-eficto-gold/30 text-eficto-green-dark/70 hover:border-eficto-gold"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        {renderQueue("indoor")}
+        {renderQueue("outdoor")}
       </div>
 
       <div>
