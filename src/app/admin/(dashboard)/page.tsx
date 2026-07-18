@@ -98,11 +98,11 @@ export default async function AdminOverviewPage() {
 
       <div>
         <h2 className="font-serif text-xl text-eficto-green-dark">حجوزات اليوم</h2>
-        <div className="mt-4 overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-soft">
+        <div className="mt-4 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-soft">
           {(reservationsToday ?? []).length === 0 ? (
             <p className="p-6 text-center text-sm text-eficto-green-dark/50">لا توجد حجوزات اليوم</p>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[420px] text-sm">
               <thead className="bg-eficto-cream/60 text-eficto-green-dark/60">
                 <tr>
                   <th className="px-5 py-3 text-right font-normal">الوقت</th>

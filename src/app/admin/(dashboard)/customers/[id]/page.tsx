@@ -78,11 +78,11 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
 
       <div className="mt-8">
         <h2 className="font-serif text-lg text-eficto-green-dark">سجل الحجوزات</h2>
-        <div className="mt-3 overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-soft">
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-soft">
           {(reservations ?? []).length === 0 ? (
             <p className="p-6 text-center text-sm text-eficto-green-dark/50">لا يوجد حجوزات سابقة</p>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[480px] text-sm">
               <thead className="bg-eficto-cream/60 text-eficto-green-dark/60">
                 <tr>
                   <th className="px-5 py-3 text-right font-normal">الوقت</th>
