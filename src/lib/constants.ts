@@ -4,6 +4,8 @@ export const SITE = {
   instagram: "https://www.instagram.com/eficto.sa",
   instagramHandle: "@eficto.sa",
   mapsUrl: "https://maps.app.goo.gl/KLmeTWWQeukhBoQg9",
+  lat: 26.4148155,
+  lng: 43.9225392,
   phone: "+966500717876",
   phoneDisplay: "٠٥٠ ٠٧١ ٧٨٧٦",
   whatsapp: "https://wa.me/966500717876",

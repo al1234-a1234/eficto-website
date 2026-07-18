@@ -1,5 +1,6 @@
 import { InstagramIcon, MapPinIcon, PhoneIcon, ClockIcon } from "./icons";
 import { SITE } from "@/lib/constants";
+import { DistanceBadge } from "./DistanceBadge";
 
 export function ContactTeaser() {
   return (
@@ -39,6 +40,7 @@ export function ContactTeaser() {
             >
               <MapPinIcon className="h-6 w-6 text-eficto-green" />
               <span className="text-sm text-eficto-green-dark/80">{SITE.city}</span>
+              <DistanceBadge />
             </a>
             <a
               href={SITE.instagram}
