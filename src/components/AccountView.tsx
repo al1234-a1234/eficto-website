@@ -12,10 +12,21 @@ const STORAGE_KEY = "eficto_waitlist_entry";
 
 type MyEntry = { id: string; joined_at: string; party_size: number };
 
+type Loyalty = { visits: number; threshold: number; reward: string; untilReward: number; earned: boolean };
+
 export function AccountView() {
   const { identity, ready, save, clear } = useCustomerIdentity();
   const [myEntry, setMyEntry] = useState<MyEntry | null>(null);
   const [myPosition, setMyPosition] = useState<number | null>(null);
+  const [loyalty, setLoyalty] = useState<Loyalty | null>(null);
+
+  useEffect(() => {
+    if (!identity) return;
+    fetch(`/api/loyalty?phone=${encodeURIComponent(identity.phone)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => data && setLoyalty(data))
+      .catch(() => {});
+  }, [identity]);
 
   useEffect(() => {
     const stored = safeGetItem(STORAGE_KEY);
@@ -102,6 +113,33 @@ export function AccountView() {
           </button>
         </div>
       </div>
+
+      {loyalty && loyalty.visits > 0 && (
+        <div className="rounded-[28px] border border-eficto-gold/25 bg-white/70 p-7 shadow-premium">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-eficto-green-dark/70">بطاقة الولاء</p>
+            <p className="text-xs text-eficto-green-dark/50">{loyalty.visits} زيارة</p>
+          </div>
+          {loyalty.earned ? (
+            <p className="mt-3 font-arabic-display text-lg text-eficto-gold-deep">🎉 مبروك، مستحق: {loyalty.reward}</p>
+          ) : (
+            <>
+              <p className="mt-3 text-sm text-eficto-green-dark/80">
+                باقي لك <span className="font-arabic-display text-eficto-green">{loyalty.untilReward}</span> زيارة
+                للحصول على {loyalty.reward}
+              </p>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-eficto-cream">
+                <div
+                  className="h-full bg-eficto-gold"
+                  style={{
+                    width: `${((loyalty.threshold - loyalty.untilReward) / loyalty.threshold) * 100}%`,
+                  }}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {myEntry ? (
         <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-8 text-center shadow-premium">

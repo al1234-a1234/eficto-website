@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useCustomerIdentity } from "@/lib/useCustomerIdentity";
+import { SITE } from "@/lib/constants";
 import { IdentityForm } from "./IdentityForm";
 import { IdentityBadge } from "./IdentityBadge";
 
@@ -58,6 +59,22 @@ export function ReviewForm() {
       <div className="rounded-[28px] border border-eficto-gold/30 bg-white/70 p-9 text-center shadow-elegant">
         <p className="font-arabic-display text-3xl text-eficto-green">شكراً لتقييمك</p>
         <p className="mt-3 text-sm text-eficto-green-dark/60">نسعد بخدمتكم دائماً في افيكتو</p>
+        {rating >= 4 && (
+          <>
+            <div className="mx-auto mt-6 h-px w-16 bg-eficto-gold/30" />
+            <p className="mt-6 text-sm text-eficto-green-dark/70">
+              يسعدنا لو تشاركنا نفس التقييم على خرائط قوقل — يساعد ناس ثانيين يلقونا 🙏
+            </p>
+            <a
+              href={SITE.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-block rounded-full bg-eficto-gold px-7 py-3 text-sm font-medium text-eficto-green-dark shadow-premium transition-all duration-300 ease-soft hover:scale-[1.03] active:scale-[0.97]"
+            >
+              قيّمنا على قوقل
+            </a>
+          </>
+        )}
       </div>
     );
   }

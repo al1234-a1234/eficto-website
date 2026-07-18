@@ -32,6 +32,7 @@ export function WaitlistWidget() {
   const [error, setError] = useState<string | null>(null);
   const [location, setLocation] = useState<WaitlistLocation>("indoor");
   const [partySize, setPartySize] = useState(2);
+  const [occasion, setOccasion] = useState("");
   const [homepageStatus, setHomepageStatus] = useState<"available" | "busy" | "full" | null>(null);
   const [locationPerm, setLocationPerm] = useState<LocationPermState>("checking");
   const [distance, setDistance] = useState<string | null>(null);
@@ -141,6 +142,7 @@ export function WaitlistWidget() {
       phone: identity.phone,
       party_size: partySize,
       location,
+      occasion: occasion.trim() || null,
     };
 
     try {
@@ -281,6 +283,16 @@ export function WaitlistWidget() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div>
+            <label className="mb-2.5 block text-sm text-eficto-green-dark/80">مناسبة خاصة؟ (اختياري)</label>
+            <input
+              value={occasion}
+              onChange={(e) => setOccasion(e.target.value)}
+              placeholder="عيد ميلاد، ذكرى زواج…"
+              className="w-full rounded-2xl border border-eficto-gold/30 bg-white/70 px-4 py-3.5 text-sm outline-none transition-colors focus:border-eficto-gold"
+            />
           </div>
 
           {formStatus === "error" && <p className="text-sm text-eficto-alert">{error}</p>}

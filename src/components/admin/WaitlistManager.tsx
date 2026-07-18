@@ -11,6 +11,7 @@ export interface WaitlistRow {
   location: "indoor" | "outdoor" | "any";
   status: "waiting" | "seated" | "left";
   joined_at: string;
+  occasion: string | null;
   eficto_customers: { full_name: string; phone: string } | null;
 }
 
@@ -30,7 +31,7 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
       try {
         const { data } = await supabase
           .from("eficto_waitlist")
-          .select("id, party_size, location, status, joined_at, eficto_customers(full_name, phone)")
+          .select("id, party_size, location, status, joined_at, occasion, eficto_customers(full_name, phone)")
           .eq("status", "waiting")
           .order("joined_at", { ascending: true });
         setRows((data ?? []) as unknown as WaitlistRow[]);
@@ -85,7 +86,14 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
               {i + 1}
             </span>
             <div>
-              <p className="font-serif text-eficto-green-dark">{row.eficto_customers?.full_name ?? "—"}</p>
+              <p className="flex items-center gap-2 font-serif text-eficto-green-dark">
+                {row.eficto_customers?.full_name ?? "—"}
+                {row.occasion && (
+                  <span className="rounded-full bg-eficto-gold/15 px-2 py-0.5 text-[10px] text-eficto-gold-deep">
+                    🎉 {row.occasion}
+                  </span>
+                )}
+              </p>
               {row.eficto_customers?.phone && (
                 <a
                   href={`tel:${row.eficto_customers.phone}`}

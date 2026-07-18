@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "بيانات غير صحيحة" }, { status: 400 });
 
-  const { full_name, phone, party_size, location } = body as Record<string, unknown>;
+  const { full_name, phone, party_size, location, occasion } = body as Record<string, unknown>;
 
   if (
     typeof full_name !== "string" ||
@@ -74,9 +74,11 @@ export async function POST(request: Request) {
 
     const customerId = await upsertCustomer(supabase, full_name.trim(), normalizedPhone);
 
+    const occasionValue = typeof occasion === "string" && occasion.trim() ? occasion.trim().slice(0, 100) : null;
+
     const { data: entry, error } = await supabase
       .from("eficto_waitlist")
-      .insert({ customer_id: customerId, party_size, location, status: "waiting" })
+      .insert({ customer_id: customerId, party_size, location, status: "waiting", occasion: occasionValue })
       .select("id, party_size, location, status, joined_at")
       .single();
 
