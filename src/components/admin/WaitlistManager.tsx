@@ -46,7 +46,9 @@ export function WaitlistManager({ initialRows }: { initialRows: WaitlistRow[] })
   async function setStatus(id: string, status: "seated" | "left") {
     setRows((prev) => prev.filter((r) => r.id !== id));
     const supabase = createClient();
-    await supabase.from("eficto_waitlist").update({ status }).eq("id", id);
+    const update: { status: string; seated_at?: string } = { status };
+    if (status === "seated") update.seated_at = new Date().toISOString();
+    await supabase.from("eficto_waitlist").update(update).eq("id", id);
 
     if (status === "seated") {
       const row = rows.find((r) => r.id === id);
