@@ -28,6 +28,7 @@ export interface Reservation {
   party_size: number;
   status: ReservationStatus;
   created_at: string;
+  status_changed_at: string | null;
 }
 
 export interface ReservationWithRelations extends Reservation {

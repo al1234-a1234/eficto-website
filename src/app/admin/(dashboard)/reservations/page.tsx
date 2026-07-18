@@ -9,7 +9,7 @@ export default async function AdminReservationsPage() {
     supabase
       .from("eficto_reservations")
       .select(
-        "id, customer_id, table_id, reservation_time, party_size, status, created_at, eficto_customers(id, full_name, phone), eficto_tables(id, table_number, capacity, location)"
+        "id, customer_id, table_id, reservation_time, party_size, status, created_at, status_changed_at, eficto_customers(id, full_name, phone), eficto_tables(id, table_number, capacity, location)"
       )
       .order("reservation_time", { ascending: false })
       .limit(300),

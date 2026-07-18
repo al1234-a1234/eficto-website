@@ -36,9 +36,10 @@ export function ReservationsManager({
   );
 
   async function updateStatus(id: string, status: ReservationStatus) {
-    setReservations((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+    const changedAt = new Date().toISOString();
+    setReservations((prev) => prev.map((r) => (r.id === id ? { ...r, status, status_changed_at: changedAt } : r)));
     const supabase = createClient();
-    await supabase.from("eficto_reservations").update({ status }).eq("id", id);
+    await supabase.from("eficto_reservations").update({ status, status_changed_at: changedAt }).eq("id", id);
   }
 
   async function updateTable(id: string, tableId: string) {
@@ -69,21 +70,23 @@ export function ReservationsManager({
       </div>
 
       <div className="mt-5 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
-        <table className="w-full min-w-[720px] text-sm">
+        <table className="w-full min-w-[920px] text-sm">
           <thead className="bg-eficto-cream/60 text-eficto-green-dark/60">
             <tr>
-              <th className="px-5 py-3 text-right font-normal">الوقت</th>
+              <th className="px-5 py-3 text-right font-normal">وقت الموعد</th>
+              <th className="px-5 py-3 text-right font-normal">وقت الحجز</th>
               <th className="px-5 py-3 text-right font-normal">العميل</th>
               <th className="px-5 py-3 text-right font-normal">الجوال</th>
               <th className="px-5 py-3 text-right font-normal">الأشخاص</th>
               <th className="px-5 py-3 text-right font-normal">الطاولة</th>
               <th className="px-5 py-3 text-right font-normal">الحالة</th>
+              <th className="px-5 py-3 text-right font-normal">تاريخ الحالة</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-5 py-8 text-center text-eficto-green-dark/50">
+                <td colSpan={8} className="px-5 py-8 text-center text-eficto-green-dark/50">
                   لا توجد حجوزات
                 </td>
               </tr>
@@ -91,6 +94,9 @@ export function ReservationsManager({
             {filtered.map((r) => (
               <tr key={r.id} className="border-t border-eficto-gold/10">
                 <td className="whitespace-nowrap px-5 py-3">{formatArabicDateTime(r.reservation_time)}</td>
+                <td className="whitespace-nowrap px-5 py-3 text-eficto-green-dark/60">
+                  {formatArabicDateTime(r.created_at)}
+                </td>
                 <td className="px-5 py-3">{r.eficto_customers?.full_name ?? "—"}</td>
                 <td dir="ltr" className="px-5 py-3 text-left">{r.eficto_customers?.phone ?? "—"}</td>
                 <td className="px-5 py-3">{r.party_size}</td>
@@ -120,6 +126,11 @@ export function ReservationsManager({
                       </option>
                     ))}
                   </select>
+                </td>
+                <td className="whitespace-nowrap px-5 py-3 text-xs text-eficto-green-dark/50">
+                  {r.status === "confirmed" || !r.status_changed_at
+                    ? "—"
+                    : formatArabicDateTime(r.status_changed_at)}
                 </td>
               </tr>
             ))}

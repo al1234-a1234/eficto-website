@@ -19,7 +19,7 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
     supabase.from("eficto_customers").select("*").eq("id", params.id).maybeSingle(),
     supabase
       .from("eficto_reservations")
-      .select("id, reservation_time, party_size, status, eficto_tables(table_number)")
+      .select("id, reservation_time, party_size, status, created_at, status_changed_at, eficto_tables(table_number)")
       .eq("customer_id", params.id)
       .order("reservation_time", { ascending: false }),
     getCustomerReviews(params.id),
@@ -82,24 +82,30 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
           {(reservations ?? []).length === 0 ? (
             <p className="p-6 text-center text-sm text-eficto-green-dark/50">لا يوجد حجوزات سابقة</p>
           ) : (
-            <table className="w-full min-w-[480px] text-sm">
+            <table className="w-full min-w-[720px] text-sm">
               <thead className="bg-eficto-cream/60 text-eficto-green-dark/60">
                 <tr>
-                  <th className="px-5 py-3 text-right font-normal">الوقت</th>
+                  <th className="px-5 py-3 text-right font-normal">وقت الموعد</th>
+                  <th className="px-5 py-3 text-right font-normal">وقت الحجز</th>
                   <th className="px-5 py-3 text-right font-normal">الطاولة</th>
                   <th className="px-5 py-3 text-right font-normal">الأشخاص</th>
                   <th className="px-5 py-3 text-right font-normal">الحالة</th>
+                  <th className="px-5 py-3 text-right font-normal">تاريخ الحالة</th>
                 </tr>
               </thead>
               <tbody>
                 {(reservations ?? []).map((r) => (
                   <tr key={r.id} className="border-t border-eficto-gold/10">
                     <td className="px-5 py-3">{formatArabicDateTime(r.reservation_time)}</td>
+                    <td className="px-5 py-3 text-eficto-green-dark/60">{formatArabicDateTime(r.created_at)}</td>
                     <td className="px-5 py-3">
                       {(r.eficto_tables as unknown as { table_number: string } | null)?.table_number ?? "—"}
                     </td>
                     <td className="px-5 py-3">{r.party_size}</td>
                     <td className="px-5 py-3">{STATUS_LABELS[r.status]}</td>
+                    <td className="px-5 py-3 text-xs text-eficto-green-dark/50">
+                      {r.status === "confirmed" || !r.status_changed_at ? "—" : formatArabicDateTime(r.status_changed_at)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
