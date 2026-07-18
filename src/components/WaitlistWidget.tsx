@@ -5,8 +5,12 @@ import { createClient } from "@/lib/supabase/client";
 import { relativeMinutesSince } from "@/lib/format";
 import { useCustomerIdentity } from "@/lib/useCustomerIdentity";
 import { safeGetItem, safeRemoveItem, safeSetItem } from "@/lib/safeStorage";
+import { SITE } from "@/lib/constants";
+import { formatDistanceAr, haversineMeters } from "@/lib/distance";
 import { IdentityForm } from "./IdentityForm";
 import { IdentityBadge } from "./IdentityBadge";
+
+type LocationPermState = "checking" | "granted" | "denied";
 
 const STORAGE_KEY = "eficto_waitlist_entry";
 
@@ -29,6 +33,29 @@ export function WaitlistWidget() {
   const [location, setLocation] = useState<WaitlistLocation>("indoor");
   const [partySize, setPartySize] = useState(2);
   const [homepageStatus, setHomepageStatus] = useState<"available" | "busy" | "full" | null>(null);
+  const [locationPerm, setLocationPerm] = useState<LocationPermState>("checking");
+  const [distance, setDistance] = useState<string | null>(null);
+
+  function requestLocation() {
+    if (!navigator.geolocation) {
+      setLocationPerm("denied");
+      return;
+    }
+    setLocationPerm("checking");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const meters = haversineMeters(pos.coords.latitude, pos.coords.longitude, SITE.lat, SITE.lng);
+        setDistance(formatDistanceAr(meters));
+        setLocationPerm("granted");
+      },
+      () => setLocationPerm("denied"),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+    );
+  }
+
+  useEffect(() => {
+    requestLocation();
+  }, []);
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("location");
@@ -190,11 +217,31 @@ export function WaitlistWidget() {
           <p className="font-arabic-display text-lg text-eficto-alert">الطاولات ممتلئة حالياً</p>
           <p className="mt-2 text-sm text-eficto-green-dark/60">يرجى الانتظار قليلاً والمحاولة بعد قليل</p>
         </div>
+      ) : locationPerm === "checking" ? (
+        <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 p-8 text-center shadow-premium">
+          <p className="text-sm text-eficto-green-dark/60">جاري تحديد موقعك…</p>
+        </div>
+      ) : locationPerm === "denied" ? (
+        <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 p-8 text-center shadow-premium">
+          <p className="font-arabic-display text-lg text-eficto-green-dark">يلزم السماح بالوصول لموقعك</p>
+          <p className="mt-2 text-sm text-eficto-green-dark/60">
+            نحتاج موقعك لمعرفة المسافة المقدرة لوصولك — اضغط السماح من المتصفح للمتابعة بالحجز
+          </p>
+          <button
+            onClick={requestLocation}
+            className="mt-6 rounded-full bg-eficto-green px-7 py-3 text-sm text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.02] active:scale-[0.97]"
+          >
+            السماح بالموقع
+          </button>
+        </div>
       ) : !ready ? null : !identity ? (
         <IdentityForm onSubmit={save} />
       ) : (
         <form onSubmit={handleJoin} className="space-y-6">
           <IdentityBadge fullName={identity.full_name} onChange={clear} />
+          {distance && (
+            <p className="-mt-2 text-center text-xs text-eficto-green-dark/50">تبعد عنك تقريباً {distance}</p>
+          )}
 
           <div>
             <label className="mb-2.5 block text-sm text-eficto-green-dark/80">اختر المنطقة</label>
