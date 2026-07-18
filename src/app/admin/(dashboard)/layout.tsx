@@ -4,9 +4,13 @@ import { SignOutButton } from "@/components/admin/SignOutButton";
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
+  // Middleware already verified the session with Supabase's auth server (a real network
+  // round trip) before this layout even runs. getSession() here just decodes the cookie
+  // locally for the email display — no second round trip on every single navigation.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   return (
     <div className="flex min-h-screen flex-col bg-eficto-ivory lg:flex-row">
