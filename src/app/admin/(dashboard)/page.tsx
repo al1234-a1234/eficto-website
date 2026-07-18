@@ -1,5 +1,8 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatArabicTime } from "@/lib/format";
+import { HomepageStatusControl } from "@/components/admin/HomepageStatusControl";
+import { CalendarIcon, ClockIcon, GridIcon, BellIcon } from "@/components/icons";
+import { formatArabicDate, formatArabicTime } from "@/lib/format";
 
 function startOfTodayRiyadhISO() {
   const now = new Date();
@@ -19,25 +22,38 @@ export default async function AdminOverviewPage() {
   const supabase = await createClient();
   const dayStart = startOfTodayRiyadhISO();
   const dayEnd = endOfTodayRiyadhISO();
+  const twentyOneDaysAgo = new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [{ count: todayCount }, { count: waitingCount }, { data: tables }, { data: reservationsToday }] =
-    await Promise.all([
-      supabase
-        .from("eficto_reservations")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "confirmed")
-        .gte("reservation_time", dayStart)
-        .lt("reservation_time", dayEnd),
-      supabase.from("eficto_waitlist").select("id", { count: "exact", head: true }).eq("status", "waiting"),
-      supabase.from("eficto_tables").select("id, table_number, capacity, location").order("table_number"),
-      supabase
-        .from("eficto_reservations")
-        .select("id, table_id, reservation_time, party_size, eficto_customers(full_name)")
-        .eq("status", "confirmed")
-        .gte("reservation_time", dayStart)
-        .lt("reservation_time", dayEnd)
-        .order("reservation_time"),
-    ]);
+  const [
+    { count: todayCount },
+    { count: waitingCount },
+    { data: tables },
+    { data: reservationsToday },
+    { data: quietRegulars },
+  ] = await Promise.all([
+    supabase
+      .from("eficto_reservations")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "confirmed")
+      .gte("reservation_time", dayStart)
+      .lt("reservation_time", dayEnd),
+    supabase.from("eficto_waitlist").select("id", { count: "exact", head: true }).eq("status", "waiting"),
+    supabase.from("eficto_tables").select("id, table_number, capacity, location").order("table_number"),
+    supabase
+      .from("eficto_reservations")
+      .select("id, table_id, reservation_time, party_size, eficto_customers(full_name)")
+      .eq("status", "confirmed")
+      .gte("reservation_time", dayStart)
+      .lt("reservation_time", dayEnd)
+      .order("reservation_time"),
+    supabase
+      .from("eficto_customers")
+      .select("id, full_name, visit_count, last_visit_at")
+      .gte("visit_count", 2)
+      .lt("last_visit_at", twentyOneDaysAgo)
+      .order("visit_count", { ascending: false })
+      .limit(5),
+  ]);
 
   const now = Date.now();
   const windowMs = 2 * 60 * 60 * 1000;
@@ -47,32 +63,83 @@ export default async function AdminOverviewPage() {
       .map((r) => r.table_id)
   );
 
+  const todayLabel = new Intl.DateTimeFormat("ar-SA", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    calendar: "gregory",
+  }).format(new Date(Date.now() + 3 * 60 * 60 * 1000));
+
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="font-arabic-display text-3xl text-eficto-green-dark">نظرة عامة</h1>
-        <p className="mt-1 text-sm text-eficto-green-dark/60">ملخص اليوم بالحجوزات وحالة الطاولات</p>
+      <div className="overflow-hidden rounded-[28px] bg-gradient-to-br from-eficto-green-dark to-eficto-green-deep shadow-elegant">
+        <div className="flex flex-col gap-6 p-7 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div>
+            <p className="font-arabic-body text-xs tracking-[0.25em] text-eficto-gold">لوحة تحكم افيكتو</p>
+            <h1 className="mt-2 font-arabic-display text-2xl text-eficto-cream sm:text-3xl">أهلاً بك</h1>
+            <p className="mt-1 text-sm text-eficto-cream/60">{todayLabel}</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
         <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           <div className="border-t-4 border-eficto-gold p-6">
-            <p className="text-sm text-eficto-green-dark/60">حجوزات اليوم</p>
+            <div className="flex items-center gap-2.5 text-eficto-green-dark/60">
+              <CalendarIcon className="h-4 w-4" />
+              <p className="text-sm">حجوزات اليوم</p>
+            </div>
             <p className="mt-2 font-arabic-display text-4xl text-eficto-green">{todayCount ?? 0}</p>
           </div>
         </div>
         <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           <div className="border-t-4 border-eficto-gold p-6">
-            <p className="text-sm text-eficto-green-dark/60">بالانتظار الآن</p>
+            <div className="flex items-center gap-2.5 text-eficto-green-dark/60">
+              <ClockIcon className="h-4 w-4" />
+              <p className="text-sm">بالانتظار الآن</p>
+            </div>
             <p className="mt-2 font-arabic-display text-4xl text-eficto-green">{waitingCount ?? 0}</p>
           </div>
         </div>
         <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
           <div className="border-t-4 border-eficto-gold p-6">
-            <p className="text-sm text-eficto-green-dark/60">طاولات مشغولة الآن</p>
+            <div className="flex items-center gap-2.5 text-eficto-green-dark/60">
+              <GridIcon className="h-4 w-4" />
+              <p className="text-sm">طاولات مشغولة الآن</p>
+            </div>
             <p className="mt-2 font-arabic-display text-4xl text-eficto-green">
               {occupiedTableIds.size} / {tables?.length ?? 0}
             </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        <HomepageStatusControl />
+
+        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+          <div className="p-5">
+            <div className="flex items-center gap-2.5">
+              <BellIcon className="h-4 w-4 text-eficto-gold-deep" />
+              <h2 className="font-serif text-lg text-eficto-green-dark">عملاء يستحقون اهتمام</h2>
+            </div>
+            <p className="mt-1 text-xs text-eficto-green-dark/50">عملاء متكررون ما زاروا من أكثر من ٣ أسابيع</p>
+            <ul className="mt-4 divide-y divide-eficto-gold/10">
+              {(quietRegulars ?? []).length === 0 ? (
+                <p className="py-3 text-sm text-eficto-green-dark/50">ولا حد — كل العملاء المتكررين نشيطين 👍</p>
+              ) : (
+                (quietRegulars ?? []).map((c) => (
+                  <li key={c.id} className="flex items-center justify-between py-2.5 text-sm">
+                    <Link href={`/admin/customers/${c.id}`} className="text-eficto-green hover:underline">
+                      {c.full_name}
+                    </Link>
+                    <span className="text-eficto-green-dark/60">
+                      آخر زيارة {c.last_visit_at ? formatArabicDate(c.last_visit_at) : "—"}
+                    </span>
+                  </li>
+                ))
+              )}
+            </ul>
           </div>
         </div>
       </div>
