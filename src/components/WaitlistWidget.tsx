@@ -10,7 +10,7 @@ import { formatDistanceAr, haversineMeters } from "@/lib/distance";
 import { IdentityForm } from "./IdentityForm";
 import { IdentityBadge } from "./IdentityBadge";
 
-type LocationPermState = "checking" | "granted" | "denied";
+type LocationPermState = "idle" | "checking" | "granted" | "denied";
 
 const STORAGE_KEY = "eficto_waitlist_entry";
 
@@ -35,29 +35,37 @@ export function WaitlistWidget() {
   const [partySize, setPartySize] = useState(2);
   const [occasion, setOccasion] = useState("");
   const [homepageStatus, setHomepageStatus] = useState<"available" | "busy" | "full" | null>(null);
-  const [locationPerm, setLocationPerm] = useState<LocationPermState>("checking");
+  const [locationPerm, setLocationPerm] = useState<LocationPermState>("idle");
   const [distance, setDistance] = useState<string | null>(null);
 
-  function requestLocation() {
-    if (!navigator.geolocation) {
-      setLocationPerm("denied");
-      return;
-    }
-    setLocationPerm("checking");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const meters = haversineMeters(pos.coords.latitude, pos.coords.longitude, SITE.lat, SITE.lng);
-        setDistance(formatDistanceAr(meters));
-        setLocationPerm("granted");
-      },
-      () => setLocationPerm("denied"),
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
-    );
+  /**
+   * Location is only requested when the customer actually submits the join form —
+   * never on page load. Firing getCurrentPosition from a real user action (the submit
+   * click) is also what makes the browser permission prompt behave reliably.
+   */
+  function requestLocation(): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) {
+        setLocationPerm("denied");
+        resolve(false);
+        return;
+      }
+      setLocationPerm("checking");
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const meters = haversineMeters(pos.coords.latitude, pos.coords.longitude, SITE.lat, SITE.lng);
+          setDistance(formatDistanceAr(meters));
+          setLocationPerm("granted");
+          resolve(true);
+        },
+        () => {
+          setLocationPerm("denied");
+          resolve(false);
+        },
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+      );
+    });
   }
-
-  useEffect(() => {
-    requestLocation();
-  }, []);
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("location");
@@ -148,6 +156,15 @@ export function WaitlistWidget() {
     setFormStatus("submitting");
     setError(null);
 
+    if (locationPerm !== "granted") {
+      const granted = await requestLocation();
+      if (!granted) {
+        setFormStatus("error");
+        setError("يلزم السماح بالوصول لموقعك لإتمام الانضمام لقائمة الانتظار — حاول مرة أخرى واضغط السماح");
+        return;
+      }
+    }
+
     const payload = {
       full_name: identity.full_name,
       phone: identity.phone,
@@ -234,23 +251,6 @@ export function WaitlistWidget() {
           <p className="font-arabic-display text-lg text-eficto-alert">الطاولات ممتلئة حالياً</p>
           <p className="mt-2 text-sm text-eficto-green-dark/60">يرجى الانتظار قليلاً والمحاولة بعد قليل</p>
         </div>
-      ) : locationPerm === "checking" ? (
-        <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 p-8 text-center shadow-premium">
-          <p className="text-sm text-eficto-green-dark/60">جاري تحديد موقعك…</p>
-        </div>
-      ) : locationPerm === "denied" ? (
-        <div className="rounded-[28px] border border-eficto-gold/25 bg-white/60 p-8 text-center shadow-premium">
-          <p className="font-arabic-display text-lg text-eficto-green-dark">يلزم السماح بالوصول لموقعك</p>
-          <p className="mt-2 text-sm text-eficto-green-dark/60">
-            نحتاج موقعك لمعرفة المسافة المقدرة لوصولك — اضغط السماح من المتصفح للمتابعة بالحجز
-          </p>
-          <button
-            onClick={requestLocation}
-            className="mt-6 rounded-full bg-eficto-green px-7 py-3 text-sm text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.02] active:scale-[0.97]"
-          >
-            السماح بالموقع
-          </button>
-        </div>
       ) : !ready ? null : !identity ? (
         <IdentityForm onSubmit={save} />
       ) : (
@@ -312,12 +312,20 @@ export function WaitlistWidget() {
 
           {formStatus === "error" && <p className="text-sm text-eficto-alert">{error}</p>}
 
+          <p className="text-center text-[11px] text-eficto-green-dark/40">
+            سنطلب صلاحية الموقع عند الانضمام لمعرفة مسافتك التقديرية
+          </p>
+
           <button
             type="submit"
             disabled={formStatus === "submitting"}
             className="w-full rounded-full bg-eficto-green py-4 text-sm font-medium text-eficto-cream shadow-premium transition-all duration-300 ease-soft hover:scale-[1.01] hover:shadow-elegant active:scale-[0.98] disabled:opacity-60"
           >
-            {formStatus === "submitting" ? "جاري الانضمام…" : "انضم لقائمة الانتظار"}
+            {formStatus === "submitting"
+              ? locationPerm === "checking"
+                ? "جاري تحديد الموقع…"
+                : "جاري الانضمام…"
+              : "انضم لقائمة الانتظار"}
           </button>
         </form>
       )}
