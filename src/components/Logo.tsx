@@ -28,6 +28,21 @@ export function LogoMark({ className, variant = "white" }: LogoMarkProps) {
   );
 }
 
+/** The circular gold-ring "eficto" badge — the brand's own app-icon / profile mark. */
+export function BadgeMark({ className }: { className?: string }) {
+  return (
+    <Image
+      src={LOGO.badgeCircle.src}
+      width={LOGO.badgeCircle.width}
+      height={LOGO.badgeCircle.height}
+      alt="eficto"
+      className={`h-9 w-auto ${className ?? ""}`}
+      priority
+      unoptimized
+    />
+  );
+}
+
 type LogoProps = {
   className?: string;
   variant?: Variant;

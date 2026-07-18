@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ComponentType } from "react";
-import { LogoMark } from "@/components/Logo";
+import { BadgeMark } from "@/components/Logo";
 import {
   MenuIcon,
   CloseIcon,
@@ -40,7 +40,7 @@ export function AdminSidebar() {
     <>
       {/* Mobile top bar */}
       <div className="flex items-center justify-between bg-eficto-green-dark px-5 py-4 lg:hidden">
-        <LogoMark className="h-8" />
+        <BadgeMark className="h-9 w-9" />
         <button className="text-eficto-cream" onClick={() => setOpen((v) => !v)} aria-label="القائمة">
           {open ? <CloseIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
         </button>
@@ -77,7 +77,7 @@ export function AdminSidebar() {
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 flex-col bg-gradient-to-b from-eficto-green-dark to-eficto-green-deep px-5 py-8 lg:flex">
         <div className="px-2">
-          <LogoMark className="h-9" />
+          <BadgeMark className="h-11 w-11" />
         </div>
         <div className="mx-2 mt-6 h-px bg-gradient-to-r from-transparent via-eficto-gold/40 to-transparent" />
         <nav className="mt-6 flex flex-col gap-1.5">

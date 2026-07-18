@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Cairo, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -33,6 +33,15 @@ export const metadata: Metadata = {
   title: "افيكتو | eficto — مطعم إيطالي في بريدة",
   description:
     "افيكتو، مطعم إيطالي في بريدة يجمع بين الأقواس الخشبية والجلد الأخضر الغامق والإضاءة الدافئة. احجز طاولتك أو انضم لقائمة الانتظار اللحظية.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "eficto",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#235C31",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

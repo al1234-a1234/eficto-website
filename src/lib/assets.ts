@@ -14,4 +14,5 @@ export const LOGO = {
   wordmarkEnGreen: { src: `${RAW_BASE}/logo/wordmark-en-green.png`, width: 721, height: 288 },
   wordmarkArWhite: { src: `${RAW_BASE}/logo/wordmark-ar-white.png`, width: 344, height: 143 },
   wordmarkArGreen: { src: `${RAW_BASE}/logo/wordmark-ar-green.png`, width: 344, height: 143 },
+  badgeCircle: { src: `${RAW_BASE}/logo/badge-circle.png`, width: 1024, height: 1024 },
 };
