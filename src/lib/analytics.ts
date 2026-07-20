@@ -5,6 +5,7 @@ const DEFAULT_TURNOVER_MINUTES = 40;
 export const LONG_SEAT_ALERT_MINUTES = 90;
 export const ANOMALY_THRESHOLD_PCT = 40;
 export const RECALL_INACTIVITY_DAYS = 21;
+export const OPERATING_HOURS_PER_DAY = 9.5;
 
 function riyadhNow() {
   return new Date(Date.now() + 3 * 60 * 60 * 1000);
@@ -336,4 +337,50 @@ export async function computeAnomalyAlerts(supabase: SupabaseClient): Promise<An
   }
 
   return alerts;
+}
+
+export interface TableUtilizationResult {
+  utilizationPct: number;
+  occupiedHours: number;
+  sampleSize: number;
+}
+
+/**
+ * Utilization is computed only from real seated durations (waitlist seated_at → completed_at),
+ * not estimated from reservations — so it undercounts walk-in reservations seated without going
+ * through the waitlist flow, but never fabricates a number from data we don't actually have.
+ */
+export async function computeTableUtilization(
+  supabase: SupabaseClient,
+  rangeStartISO: string,
+  rangeEndISO: string,
+  tableCount: number
+): Promise<TableUtilizationResult> {
+  const { data } = await supabase
+    .from("eficto_waitlist")
+    .select("seated_at, completed_at")
+    .eq("status", "completed")
+    .not("seated_at", "is", null)
+    .not("completed_at", "is", null)
+    .gte("seated_at", rangeStartISO)
+    .lte("seated_at", rangeEndISO)
+    .limit(2000);
+
+  const rows = data ?? [];
+  const occupiedMinutes = rows.reduce(
+    (sum, r) => sum + Math.max(0, minutesBetween(r.seated_at as string, r.completed_at as string)),
+    0
+  );
+
+  const daysInRange = Math.max(
+    1,
+    Math.round((new Date(rangeEndISO).getTime() - new Date(rangeStartISO).getTime()) / (24 * 60 * 60 * 1000))
+  );
+  const totalAvailableMinutes = tableCount * OPERATING_HOURS_PER_DAY * 60 * daysInRange;
+
+  return {
+    utilizationPct: totalAvailableMinutes > 0 ? Math.round((occupiedMinutes / totalAvailableMinutes) * 100) : 0,
+    occupiedHours: Math.round(occupiedMinutes / 60),
+    sampleSize: rows.length,
+  };
 }

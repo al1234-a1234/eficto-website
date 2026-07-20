@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CustomerNotes } from "@/components/admin/CustomerNotes";
+import { CustomerGenderControl } from "@/components/admin/CustomerGenderControl";
 import { StarRating } from "@/components/StarRating";
 import { getCustomerReviews, averageRating } from "@/lib/data";
 import { formatArabicDate, formatArabicDateTime } from "@/lib/format";
@@ -49,9 +50,12 @@ export default async function CustomerProfilePage({ params }: { params: { id: st
           <h1 className="font-arabic-display text-3xl text-eficto-green-dark">{customer.full_name}</h1>
           <p dir="ltr" className="mt-1 text-sm text-eficto-green-dark/60">{customer.phone}</p>
         </div>
-        {customer.visit_count >= 5 && (
-          <span className="rounded-full bg-eficto-gold/20 px-3 py-1 text-xs text-eficto-gold-deep">عميل VIP</span>
-        )}
+        <div className="flex items-center gap-3">
+          <CustomerGenderControl customerId={customer.id} initialGender={customer.gender} />
+          {customer.visit_count >= 5 && (
+            <span className="rounded-full bg-eficto-gold/20 px-3 py-1 text-xs text-eficto-gold-deep">عميل VIP</span>
+          )}
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">

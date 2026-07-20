@@ -7,13 +7,15 @@ import { formatArabicDate } from "@/lib/format";
 import { DownloadIcon } from "@/components/icons";
 import type { Customer } from "@/lib/types";
 
+const GENDER_LABELS: Record<string, string> = { male: "ذكر", female: "أنثى" };
+
 function exportCustomersCsv(customers: Customer[]) {
-  const header = "الاسم,الجوال,عدد الزيارات,آخر زيارة\n";
+  const header = "الاسم,الجوال,الجنس,عدد الزيارات,آخر زيارة\n";
   const rows = customers
     .map((c) => {
       const name = `"${c.full_name.replace(/"/g, '""')}"`;
       const lastVisit = c.last_visit_at ? c.last_visit_at.slice(0, 10) : "";
-      return `${name},${c.phone},${c.visit_count},${lastVisit}`;
+      return `${name},${c.phone},${c.gender ? GENDER_LABELS[c.gender] : ""},${c.visit_count},${lastVisit}`;
     })
     .join("\n");
   const blob = new Blob(["﻿" + header + rows], { type: "text/csv;charset=utf-8;" });
@@ -77,6 +79,7 @@ export function CustomerSearch({ initialCustomers }: { initialCustomers: Custome
               <tr>
                 <th className="px-5 py-3 text-right font-normal">الاسم</th>
                 <th className="px-5 py-3 text-right font-normal">الجوال</th>
+                <th className="px-5 py-3 text-right font-normal">الجنس</th>
                 <th className="px-5 py-3 text-right font-normal">عدد الزيارات</th>
                 <th className="px-5 py-3 text-right font-normal">آخر زيارة</th>
               </tr>
@@ -95,6 +98,7 @@ export function CustomerSearch({ initialCustomers }: { initialCustomers: Custome
                     )}
                   </td>
                   <td dir="ltr" className="px-5 py-3 text-left">{c.phone}</td>
+                  <td className="px-5 py-3 text-eficto-green-dark/60">{c.gender ? GENDER_LABELS[c.gender] : "—"}</td>
                   <td className="px-5 py-3">{c.visit_count}</td>
                   <td className="px-5 py-3">{c.last_visit_at ? formatArabicDate(c.last_visit_at) : "—"}</td>
                 </tr>

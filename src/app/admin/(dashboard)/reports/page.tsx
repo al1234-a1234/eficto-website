@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { computeDepartureStats, computeTurnoverStats } from "@/lib/analytics";
+import { computeDepartureStats, computeTurnoverStats, computeTableUtilization } from "@/lib/analytics";
 
 function startOfTodayRiyadhISO() {
   const now = new Date();
@@ -30,7 +30,9 @@ export default async function AdminReportsPage({
     ? new Date(new Date(`${searchParams.end}T00:00:00+03:00`).getTime() + 24 * 60 * 60 * 1000).toISOString()
     : new Date().toISOString();
 
-  const [{ data: reservations }, { data: topCustomers }, { data: seatedWaits }, departureRange, turnoverRange] =
+  const { count: tableCount } = await supabase.from("eficto_tables").select("id", { count: "exact", head: true });
+
+  const [{ data: reservations }, { data: topCustomers }, { data: seatedWaits }, departureRange, turnoverRange, utilization] =
     await Promise.all([
       supabase.from("eficto_reservations").select("reservation_time, status").limit(2000),
       supabase
@@ -48,6 +50,7 @@ export default async function AdminReportsPage({
         .limit(1000),
       computeDepartureStats(supabase, rangeStartISO),
       computeTurnoverStats(supabase, rangeStartISO),
+      computeTableUtilization(supabase, rangeStartISO, rangeEndISO, tableCount ?? 0),
     ]);
 
   function avgWaitMinutes(rows: { joined_at: string; seated_at: string | null }[]) {
@@ -186,6 +189,16 @@ export default async function AdminReportsPage({
                 <p className="mt-1 text-xs text-eficto-green-dark/50">خارجي ({turnoverRange.outdoor.sampleSize} جلسة)</p>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+          <div className="border-t-4 border-eficto-gold p-6">
+            <h2 className="font-serif text-lg text-eficto-green-dark">نسبة إشغال الطاولات</h2>
+            <p className="mt-3 font-arabic-display text-4xl text-eficto-green">{utilization.utilizationPct}%</p>
+            <p className="mt-1 text-xs text-eficto-green-dark/50">
+              {utilization.occupiedHours} ساعة إشغال فعلية خلال الفترة — من بيانات الجلوس الموثقة فقط
+            </p>
           </div>
         </div>
 

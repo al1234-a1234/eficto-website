@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatArabicDateTime } from "@/lib/format";
+import { DownloadIcon } from "@/components/icons";
 import type { ReservationStatus, ReservationWithRelations, RestaurantTable } from "@/lib/types";
 
 const STATUS_LABELS: Record<ReservationStatus, string> = {
@@ -20,20 +21,50 @@ const TABS: { key: "all" | ReservationStatus; label: string }[] = [
   { key: "no_show", label: "لم يحضر" },
 ];
 
+function exportReservationsCsv(rows: ReservationWithRelations[]) {
+  const header = "وقت الموعد,العميل,الجوال,عدد الأشخاص,الطاولة,الحالة\n";
+  const csvRows = rows
+    .map((r) => {
+      const name = `"${(r.eficto_customers?.full_name ?? "").replace(/"/g, '""')}"`;
+      const table = r.eficto_tables ? `طاولة ${r.eficto_tables.table_number}` : "";
+      return `${r.reservation_time},${name},${r.eficto_customers?.phone ?? ""},${r.party_size},${table},${STATUS_LABELS[r.status]}`;
+    })
+    .join("\n");
+  const blob = new Blob(["﻿" + header + csvRows], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `حجوزات-افيكتو-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function ReservationsManager({
   initialReservations,
   tables,
+  startValue,
+  endValue,
 }: {
   initialReservations: ReservationWithRelations[];
   tables: RestaurantTable[];
+  startValue: string;
+  endValue: string;
 }) {
   const [reservations, setReservations] = useState(initialReservations);
   const [tab, setTab] = useState<"all" | ReservationStatus>("all");
+  const [query, setQuery] = useState("");
 
-  const filtered = useMemo(
-    () => (tab === "all" ? reservations : reservations.filter((r) => r.status === tab)),
-    [reservations, tab]
-  );
+  const filtered = useMemo(() => {
+    let rows = tab === "all" ? reservations : reservations.filter((r) => r.status === tab);
+    const trimmed = query.trim();
+    if (trimmed) {
+      rows = rows.filter(
+        (r) =>
+          r.eficto_customers?.full_name?.includes(trimmed) || r.eficto_customers?.phone?.includes(trimmed)
+      );
+    }
+    return rows;
+  }, [reservations, tab, query]);
 
   async function updateStatus(id: string, status: ReservationStatus) {
     const changedAt = new Date().toISOString();
@@ -53,7 +84,48 @@ export function ReservationsManager({
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
+      <form className="flex flex-wrap items-end gap-3 rounded-2xl border border-eficto-gold/25 bg-white p-4 shadow-premium">
+        <div>
+          <label className="block text-xs text-eficto-green-dark/60">من تاريخ</label>
+          <input
+            type="date"
+            name="start"
+            defaultValue={startValue}
+            className="mt-1 rounded-lg border border-eficto-gold/30 bg-transparent px-3 py-1.5 text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-eficto-green-dark/60">إلى تاريخ</label>
+          <input
+            type="date"
+            name="end"
+            defaultValue={endValue}
+            className="mt-1 rounded-lg border border-eficto-gold/30 bg-transparent px-3 py-1.5 text-sm"
+          />
+        </div>
+        <button
+          type="submit"
+          className="rounded-full bg-eficto-green px-5 py-2 text-sm text-eficto-cream transition-transform hover:scale-105"
+        >
+          تحديث
+        </button>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="ابحث بالاسم أو الجوال…"
+          className="min-w-[200px] flex-1 rounded-lg border border-eficto-gold/30 bg-transparent px-3 py-2 text-sm outline-none transition-colors focus:border-eficto-gold"
+        />
+        <button
+          type="button"
+          onClick={() => exportReservationsCsv(filtered)}
+          className="flex items-center gap-2 rounded-full border border-eficto-gold/30 bg-white px-4 py-2 text-sm text-eficto-green-dark/80 transition-colors hover:border-eficto-gold"
+        >
+          <DownloadIcon className="h-4 w-4" />
+          تصدير CSV
+        </button>
+      </form>
+
+      <div className="mt-5 flex flex-wrap gap-2">
         {TABS.map((t) => (
           <button
             key={t.key}

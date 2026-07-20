@@ -2,11 +2,14 @@ export type ReservationStatus = "confirmed" | "cancelled" | "completed" | "no_sh
 export type WaitlistStatus = "waiting" | "seated" | "left" | "completed";
 export type TableLocation = "indoor" | "outdoor";
 
+export type CustomerGender = "male" | "female";
+
 export interface Customer {
   id: string;
   full_name: string;
   phone: string;
   notes: string | null;
+  gender: CustomerGender | null;
   visit_count: number;
   last_visit_at: string | null;
   created_at: string;
