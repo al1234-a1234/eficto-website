@@ -34,7 +34,6 @@ export function WaitlistWidget() {
   const [location, setLocation] = useState<WaitlistLocation>("indoor");
   const [partySize, setPartySize] = useState(2);
   const [occasion, setOccasion] = useState("");
-  const [homepageStatus, setHomepageStatus] = useState<"available" | "busy" | "full" | null>(null);
   const [locationPerm, setLocationPerm] = useState<LocationPermState>("idle");
   const [distance, setDistance] = useState<string | null>(null);
 
@@ -70,21 +69,6 @@ export function WaitlistWidget() {
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("location");
     if (requested === "indoor" || requested === "outdoor") setLocation(requested);
-  }, []);
-
-  useEffect(() => {
-    async function loadStatus() {
-      try {
-        const res = await fetch("/api/status", { cache: "no-store" });
-        const data = await res.json();
-        setHomepageStatus(data.status ?? "available");
-      } catch {
-        setHomepageStatus("available");
-      }
-    }
-    loadStatus();
-    const interval = setInterval(loadStatus, 8000);
-    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -244,27 +228,9 @@ export function WaitlistWidget() {
           </button>
         </div>
       ) : !ready ? null : !identity ? (
-        <>
-          {homepageStatus === "full" && (
-            <div className="mb-6 rounded-[28px] border border-eficto-alert/30 bg-eficto-alert/5 p-6 text-center shadow-elegant">
-              <p className="font-arabic-display text-lg text-eficto-alert">الطاولات مزدحمة حالياً</p>
-              <p className="mt-2 text-sm text-eficto-green-dark/60">
-                سجّل بياناتك وراح نتواصل معك عند توفر طاولة
-              </p>
-            </div>
-          )}
-          <IdentityForm onSubmit={save} />
-        </>
+        <IdentityForm onSubmit={save} />
       ) : (
         <form onSubmit={handleJoin} className="space-y-6">
-          {homepageStatus === "full" && (
-            <div className="rounded-[28px] border border-eficto-alert/30 bg-eficto-alert/5 p-6 text-center shadow-elegant">
-              <p className="font-arabic-display text-lg text-eficto-alert">الطاولات مزدحمة حالياً</p>
-              <p className="mt-2 text-sm text-eficto-green-dark/60">
-                سجّل بياناتك وراح نتواصل معك عند توفر طاولة
-              </p>
-            </div>
-          )}
           <IdentityBadge fullName={identity.full_name} onChange={clear} />
           {distance && (
             <p className="-mt-2 text-center text-xs text-eficto-green-dark/50">تبعد عنك تقريباً {distance}</p>
