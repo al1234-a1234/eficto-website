@@ -7,6 +7,7 @@ import { useCustomerIdentity } from "@/lib/useCustomerIdentity";
 import { safeGetItem, safeRemoveItem, safeSetItem } from "@/lib/safeStorage";
 import { SITE } from "@/lib/constants";
 import { formatDistanceAr, haversineMeters } from "@/lib/distance";
+import { subscribeToPushNotifications } from "@/lib/pushClient";
 import { IdentityForm } from "./IdentityForm";
 import { IdentityBadge } from "./IdentityBadge";
 
@@ -173,6 +174,7 @@ export function WaitlistWidget() {
         setMyEntry(entry);
         setMyPosition(data.position);
         setFormStatus("idle");
+        subscribeToPushNotifications(entry.id);
       } else {
         setFormStatus("error");
         setError(data.error ?? "حدث خطأ غير متوقع");

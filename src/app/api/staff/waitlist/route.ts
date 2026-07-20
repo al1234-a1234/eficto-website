@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStaffSession } from "@/lib/staffAuth";
+import { notifyLocationPositions } from "@/lib/push";
 
 export async function PATCH(request: Request) {
   const session = await getStaffSession();
@@ -20,7 +21,7 @@ export async function PATCH(request: Request) {
 
   const { data: entry } = await supabase
     .from("eficto_waitlist")
-    .select("id, customer_id")
+    .select("id, customer_id, location")
     .eq("id", id)
     .maybeSingle();
 
@@ -31,6 +32,10 @@ export async function PATCH(request: Request) {
 
   const { error } = await supabase.from("eficto_waitlist").update(update).eq("id", id);
   if (error) return NextResponse.json({ error: "تعذر تحديث الحالة" }, { status: 500 });
+
+  if (entry?.location === "indoor" || entry?.location === "outdoor") {
+    await notifyLocationPositions(supabase, entry.location);
+  }
 
   if (status === "seated" && entry?.customer_id) {
     const { data: customer } = await supabase

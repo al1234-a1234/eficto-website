@@ -69,6 +69,7 @@ export function WaitlistManager({
   }, []);
 
   async function setStatus(id: string, status: "seated" | "left" | "completed") {
+    const location = rows.find((r) => r.id === id)?.location ?? seated.find((r) => r.id === id)?.location;
     setRows((prev) => prev.filter((r) => r.id !== id));
     setSeated((prev) => prev.filter((r) => r.id !== id));
     const supabase = createClient();
@@ -77,6 +78,14 @@ export function WaitlistManager({
     if (status === "left") update.left_at = new Date().toISOString();
     if (status === "completed") update.completed_at = new Date().toISOString();
     await supabase.from("eficto_waitlist").update(update).eq("id", id);
+
+    if (location === "indoor" || location === "outdoor") {
+      fetch("/api/waitlist/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location }),
+      }).catch(() => {});
+    }
 
     if (status === "seated") {
       const row = rows.find((r) => r.id === id);
