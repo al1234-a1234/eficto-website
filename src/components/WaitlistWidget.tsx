@@ -243,15 +243,28 @@ export function WaitlistWidget() {
             إلغاء الانتظار
           </button>
         </div>
-      ) : homepageStatus === "full" ? (
-        <div className="rounded-[28px] border border-eficto-alert/30 bg-eficto-alert/5 p-8 text-center shadow-elegant">
-          <p className="font-arabic-display text-lg text-eficto-alert">الطاولات ممتلئة حالياً</p>
-          <p className="mt-2 text-sm text-eficto-green-dark/60">يرجى الانتظار قليلاً والمحاولة بعد قليل</p>
-        </div>
       ) : !ready ? null : !identity ? (
-        <IdentityForm onSubmit={save} />
+        <>
+          {homepageStatus === "full" && (
+            <div className="mb-6 rounded-[28px] border border-eficto-alert/30 bg-eficto-alert/5 p-6 text-center shadow-elegant">
+              <p className="font-arabic-display text-lg text-eficto-alert">الطاولات مزدحمة حالياً</p>
+              <p className="mt-2 text-sm text-eficto-green-dark/60">
+                سجّل بياناتك وراح نتواصل معك عند توفر طاولة
+              </p>
+            </div>
+          )}
+          <IdentityForm onSubmit={save} />
+        </>
       ) : (
         <form onSubmit={handleJoin} className="space-y-6">
+          {homepageStatus === "full" && (
+            <div className="rounded-[28px] border border-eficto-alert/30 bg-eficto-alert/5 p-6 text-center shadow-elegant">
+              <p className="font-arabic-display text-lg text-eficto-alert">الطاولات مزدحمة حالياً</p>
+              <p className="mt-2 text-sm text-eficto-green-dark/60">
+                سجّل بياناتك وراح نتواصل معك عند توفر طاولة
+              </p>
+            </div>
+          )}
           <IdentityBadge fullName={identity.full_name} onChange={clear} />
           {distance && (
             <p className="-mt-2 text-center text-xs text-eficto-green-dark/50">تبعد عنك تقريباً {distance}</p>

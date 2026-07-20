@@ -39,6 +39,12 @@ export async function POST(request: Request) {
   try {
     const supabase = createAdminClient();
 
+    // The customer's name and phone are saved first, before any capacity checks — someone
+    // trying to join while we're full is still a real lead the owner wants on record, not
+    // data that should be silently discarded because the join itself gets rejected.
+    const normalizedPhone = normalizePhone(phone);
+    const customerId = await upsertCustomer(supabase, full_name.trim(), normalizedPhone);
+
     const { data: statusRow } = await supabase
       .from("eficto_settings")
       .select("value")
@@ -47,32 +53,33 @@ export async function POST(request: Request) {
 
     if (statusRow?.value === "full") {
       return NextResponse.json(
-        { error: "الطاولات ممتلئة حالياً، يرجى الانتظار قليلاً والمحاولة بعد قليل" },
+        { error: "الطاولات ممتلئة حالياً — حفظنا بياناتك وسنتواصل معك عند توفر طاولة" },
         { status: 409 }
       );
     }
 
     if (location !== "any" && (await isLocationFull(supabase, location))) {
       return NextResponse.json(
-        { error: location === "indoor" ? "الجلسة الداخلية ممتلئة حالياً" : "الجلسة الخارجية ممتلئة حالياً" },
+        {
+          error:
+            location === "indoor"
+              ? "الجلسة الداخلية ممتلئة حالياً — حفظنا بياناتك وسنتواصل معك عند توفر طاولة"
+              : "الجلسة الخارجية ممتلئة حالياً — حفظنا بياناتك وسنتواصل معك عند توفر طاولة",
+        },
         { status: 409 }
       );
     }
 
-    const normalizedPhone = normalizePhone(phone);
-
     const { data: alreadyWaiting } = await supabase
       .from("eficto_waitlist")
-      .select("id, eficto_customers!inner(phone)")
+      .select("id")
       .eq("status", "waiting")
-      .eq("eficto_customers.phone", normalizedPhone)
+      .eq("customer_id", customerId)
       .maybeSingle();
 
     if (alreadyWaiting) {
       return NextResponse.json({ error: "أنت بالفعل ضمن قائمة الانتظار" }, { status: 409 });
     }
-
-    const customerId = await upsertCustomer(supabase, full_name.trim(), normalizedPhone);
 
     const occasionValue = typeof occasion === "string" && occasion.trim() ? occasion.trim().slice(0, 100) : null;
 
