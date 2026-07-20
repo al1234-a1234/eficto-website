@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "لوحة تحكم افيكتو",
+    name: "افيكتو",
     short_name: "eficto",
-    description: "لوحة تحكم إدارة قائمة الانتظار والحجوزات لمطعم افيكتو",
-    start_url: "/admin",
+    description: "افيكتو، مطعم إيطالي في بريدة — احجز طاولتك أو انضم لقائمة الانتظار اللحظية",
+    start_url: "/",
     display: "standalone",
     background_color: "#17401F",
     theme_color: "#235C31",
