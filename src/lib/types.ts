@@ -54,3 +54,26 @@ export interface Review {
   review_date: string | null;
   created_at: string;
 }
+
+export interface MenuCategory {
+  id: string;
+  name_ar: string;
+  name_en: string | null;
+  sort_order: number;
+  active: boolean;
+  created_at: string;
+}
+
+export interface MenuItem {
+  id: string;
+  category_id: string;
+  name_ar: string;
+  name_en: string | null;
+  description_ar: string | null;
+  price_sar: number;
+  image_url: string | null;
+  sort_order: number;
+  active: boolean;
+  is_featured: boolean;
+  created_at: string;
+}

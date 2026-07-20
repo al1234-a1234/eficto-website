@@ -122,3 +122,51 @@ export function BellIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+export function BookIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <path d="M4 5.2c2-.9 4.4-.9 6.5.4v13.2c-2.1-1.3-4.5-1.3-6.5-.4V5.2ZM20 5.2c-2-.9-4.4-.9-6.5.4v13.2c2.1-1.3 4.5-1.3 6.5-.4V5.2Z" />
+    </svg>
+  );
+}
+
+export function PlusIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+export function TrashIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <path d="M5 7.5h14M9.5 7.5V5.8c0-.7.6-1.3 1.3-1.3h2.4c.7 0 1.3.6 1.3 1.3v1.7M7 7.5l.7 11c.1 1 .9 1.8 1.9 1.8h4.8c1 0 1.8-.8 1.9-1.8l.7-11" />
+    </svg>
+  );
+}
+
+export function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="M4.5 12.5l5 5 10-11" />
+    </svg>
+  );
+}
+
+export function ArrowUpIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="M12 19V5M6 10l6-6 6 6" />
+    </svg>
+  );
+}
+
+export function ArrowDownIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="M12 5v14M6 14l6 6 6-6" />
+    </svg>
+  );
+}

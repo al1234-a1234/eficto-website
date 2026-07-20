@@ -16,6 +16,7 @@ export const SITE = {
 
 export const NAV_LINKS = [
   { href: "/", label: "الرئيسية" },
+  { href: "/menu", label: "قائمة الطعام" },
   { href: "/contact", label: "تواصل معنا" },
   { href: "/reviews", label: "شاركنا تقييمك" },
   { href: "/account", label: "حسابي" },

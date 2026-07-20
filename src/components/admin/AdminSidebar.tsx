@@ -15,12 +15,14 @@ import {
   ChartIcon,
   GearIcon,
   BellIcon,
+  BookIcon,
 } from "@/components/icons";
 
 const LINKS: { href: string; label: string; exact?: boolean; icon: ComponentType<{ className?: string }> }[] = [
   { href: "/admin", label: "نظرة عامة", exact: true, icon: GridIcon },
   { href: "/admin/reservations", label: "الحجوزات", icon: CalendarIcon },
   { href: "/admin/waitlist", label: "الانتظار", icon: ClockIcon },
+  { href: "/admin/menu", label: "قائمة الطعام", icon: BookIcon },
   { href: "/admin/customers", label: "العملاء", icon: UsersIcon },
   { href: "/admin/recall", label: "استرجاع العملاء", icon: BellIcon },
   { href: "/admin/reviews", label: "التقييمات", icon: StarIcon },
