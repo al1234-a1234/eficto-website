@@ -4,7 +4,7 @@ import { CustomerSearch } from "@/components/admin/CustomerSearch";
 export default async function AdminCustomersPage() {
   const supabase = await createClient();
   const [{ data }, { data: allVisitCounts }] = await Promise.all([
-    supabase.from("eficto_customers").select("*").order("visit_count", { ascending: false }).limit(50),
+    supabase.from("eficto_customers").select("*").order("visit_count", { ascending: false }).limit(1000),
     supabase.from("eficto_customers").select("visit_count").limit(5000),
   ]);
 

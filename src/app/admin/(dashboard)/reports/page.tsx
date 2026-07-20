@@ -16,6 +16,12 @@ function toRiyadhDateInputValue(iso: string) {
   return riyadh.toISOString().slice(0, 10);
 }
 
+const WEEKDAY_LABELS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+
+function riyadhWeekday(iso: string) {
+  return new Date(new Date(iso).getTime() + 3 * 60 * 60 * 1000).getUTCDay();
+}
+
 export default async function AdminReportsPage({
   searchParams,
 }: {
@@ -34,7 +40,12 @@ export default async function AdminReportsPage({
 
   const [{ data: reservations }, { data: topCustomers }, { data: seatedWaits }, departureRange, turnoverRange, utilization] =
     await Promise.all([
-      supabase.from("eficto_reservations").select("reservation_time, status").limit(2000),
+      supabase
+        .from("eficto_reservations")
+        .select("reservation_time, status")
+        .gte("reservation_time", rangeStartISO)
+        .lte("reservation_time", rangeEndISO)
+        .limit(2000),
       supabase
         .from("eficto_customers")
         .select("id, full_name, phone, visit_count")
@@ -72,6 +83,17 @@ export default async function AdminReportsPage({
   const cancelled = all.filter((r) => r.status === "cancelled").length;
   const noShow = all.filter((r) => r.status === "no_show").length;
   const cancellationRate = total > 0 ? Math.round(((cancelled + noShow) / total) * 100) : 0;
+
+  const cancellationWeekdayCounts = new Map<number, number>();
+  for (const r of all) {
+    if (r.status !== "cancelled" && r.status !== "no_show") continue;
+    const weekday = riyadhWeekday(r.reservation_time);
+    cancellationWeekdayCounts.set(weekday, (cancellationWeekdayCounts.get(weekday) ?? 0) + 1);
+  }
+  const busiestCancellationDays = [...cancellationWeekdayCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([weekday, count]) => ({ label: WEEKDAY_LABELS[weekday], count }));
 
   const hourCounts = new Map<number, number>();
   const dayCounts = new Map<string, number>();
@@ -202,13 +224,36 @@ export default async function AdminReportsPage({
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
+        <div className="overflow-hidden rounded-2xl border border-eficto-gold/25 bg-white shadow-premium sm:col-span-2">
           <div className="border-t-4 border-eficto-gold p-6">
-            <h2 className="font-serif text-lg text-eficto-green-dark">معدل الإلغاء / عدم الحضور (حجوزات)</h2>
-            <p className="mt-3 font-arabic-display text-4xl text-eficto-green">{cancellationRate}%</p>
-            <p className="mt-1 text-xs text-eficto-green-dark/50">
-              {cancelled + noShow} من أصل {total} حجز
-            </p>
+            <h2 className="font-serif text-lg text-eficto-green-dark">تقرير الإلغاءات</h2>
+            <div className="mt-3 flex flex-wrap items-end gap-8">
+              <div>
+                <p className="font-arabic-display text-4xl text-eficto-green">{cancellationRate}%</p>
+                <p className="mt-1 text-xs text-eficto-green-dark/50">{cancelled + noShow} من أصل {total} حجز</p>
+              </div>
+              <div>
+                <p className="font-arabic-display text-2xl text-eficto-green-dark/70">{cancelled}</p>
+                <p className="mt-1 text-xs text-eficto-green-dark/50">إلغاء من العميل</p>
+              </div>
+              <div>
+                <p className="font-arabic-display text-2xl text-eficto-green-dark/70">{noShow}</p>
+                <p className="mt-1 text-xs text-eficto-green-dark/50">لم يحضر</p>
+              </div>
+              {busiestCancellationDays.length > 0 && (
+                <div>
+                  <p className="text-xs text-eficto-green-dark/50">أكثر الأيام إلغاءً</p>
+                  <ul className="mt-1.5 space-y-1">
+                    {busiestCancellationDays.map((d) => (
+                      <li key={d.label} className="flex items-center gap-2 text-sm text-eficto-green-dark/70">
+                        <span>{d.label}</span>
+                        <span className="text-eficto-green-dark/40">({d.count})</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

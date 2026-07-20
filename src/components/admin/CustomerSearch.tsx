@@ -1,13 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatArabicDate } from "@/lib/format";
 import { DownloadIcon } from "@/components/icons";
+import { RECALL_INACTIVITY_DAYS } from "@/lib/analytics";
 import type { Customer } from "@/lib/types";
 
 const GENDER_LABELS: Record<string, string> = { male: "ذكر", female: "أنثى" };
+
+type Segment = "all" | "new" | "repeat" | "vip" | "dormant";
+
+const SEGMENTS: { key: Segment; label: string }[] = [
+  { key: "all", label: "الكل" },
+  { key: "new", label: "جدد" },
+  { key: "repeat", label: "متكررين" },
+  { key: "vip", label: "VIP" },
+  { key: "dormant", label: "غير نشطين" },
+];
+
+function isDormant(customer: Customer) {
+  if (!customer.last_visit_at) return false;
+  const days = (Date.now() - new Date(customer.last_visit_at).getTime()) / (24 * 60 * 60 * 1000);
+  return days >= RECALL_INACTIVITY_DAYS;
+}
+
+function matchesSegment(customer: Customer, segment: Segment) {
+  switch (segment) {
+    case "new":
+      return customer.visit_count <= 1;
+    case "repeat":
+      return customer.visit_count >= 2 && customer.visit_count < 5;
+    case "vip":
+      return customer.visit_count >= 5;
+    case "dormant":
+      return isDormant(customer);
+    default:
+      return true;
+  }
+}
 
 function exportCustomersCsv(customers: Customer[]) {
   const header = "الاسم,الجوال,الجنس,عدد الزيارات,آخر زيارة\n";
@@ -30,6 +62,20 @@ function exportCustomersCsv(customers: Customer[]) {
 export function CustomerSearch({ initialCustomers }: { initialCustomers: Customer[] }) {
   const [query, setQuery] = useState("");
   const [customers, setCustomers] = useState(initialCustomers);
+  const [segment, setSegment] = useState<Segment>("all");
+
+  const segmentCounts = useMemo(() => {
+    const counts: Record<Segment, number> = { all: customers.length, new: 0, repeat: 0, vip: 0, dormant: 0 };
+    for (const c of customers) {
+      if (matchesSegment(c, "new")) counts.new++;
+      if (matchesSegment(c, "repeat")) counts.repeat++;
+      if (matchesSegment(c, "vip")) counts.vip++;
+      if (matchesSegment(c, "dormant")) counts.dormant++;
+    }
+    return counts;
+  }, [customers]);
+
+  const filtered = useMemo(() => customers.filter((c) => matchesSegment(c, segment)), [customers, segment]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -62,7 +108,7 @@ export function CustomerSearch({ initialCustomers }: { initialCustomers: Custome
           className="w-full max-w-md rounded-xl border border-eficto-gold/30 bg-white px-4 py-3 outline-none transition-colors focus:border-eficto-gold"
         />
         <button
-          onClick={() => exportCustomersCsv(customers)}
+          onClick={() => exportCustomersCsv(filtered)}
           className="flex items-center justify-center gap-2 rounded-xl border border-eficto-gold/30 bg-white px-4 py-3 text-sm text-eficto-green-dark/80 transition-colors hover:border-eficto-gold sm:w-auto"
         >
           <DownloadIcon className="h-4 w-4" />
@@ -70,8 +116,24 @@ export function CustomerSearch({ initialCustomers }: { initialCustomers: Custome
         </button>
       </div>
 
+      <div className="mt-4 flex flex-wrap gap-2">
+        {SEGMENTS.map((s) => (
+          <button
+            key={s.key}
+            onClick={() => setSegment(s.key)}
+            className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              segment === s.key
+                ? "border-eficto-green bg-eficto-green text-eficto-cream"
+                : "border-eficto-gold/30 text-eficto-green-dark/70 hover:border-eficto-gold"
+            }`}
+          >
+            {s.label} ({segmentCounts[s.key]})
+          </button>
+        ))}
+      </div>
+
       <div className="mt-5 overflow-x-auto rounded-2xl border border-eficto-gold/25 bg-white shadow-premium">
-        {customers.length === 0 ? (
+        {filtered.length === 0 ? (
           <p className="p-8 text-center text-sm text-eficto-green-dark/50">لا يوجد عملاء</p>
         ) : (
           <table className="w-full min-w-[560px] text-sm">
@@ -85,7 +147,7 @@ export function CustomerSearch({ initialCustomers }: { initialCustomers: Custome
               </tr>
             </thead>
             <tbody>
-              {customers.map((c) => (
+              {filtered.map((c) => (
                 <tr key={c.id} className="border-t border-eficto-gold/10">
                   <td className="px-5 py-3">
                     <Link href={`/admin/customers/${c.id}`} className="text-eficto-green hover:underline">
