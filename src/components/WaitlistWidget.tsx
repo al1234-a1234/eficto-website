@@ -156,13 +156,10 @@ export function WaitlistWidget() {
     setFormStatus("submitting");
     setError(null);
 
+    // Location is best-effort only (for the "تبعد عنك تقريباً" distance display) and must
+    // never block joining — a denied/failed/slow GPS fix should never stop a real booking.
     if (locationPerm !== "granted") {
-      const granted = await requestLocation();
-      if (!granted) {
-        setFormStatus("error");
-        setError("يلزم السماح بالوصول لموقعك لإتمام الانضمام لقائمة الانتظار — حاول مرة أخرى واضغط السماح");
-        return;
-      }
+      await requestLocation();
     }
 
     const payload = {
