@@ -8,7 +8,7 @@ export default async function AdminWaitlistPage() {
   const [{ data }, { data: seatedData }, { data: locationStatus }] = await Promise.all([
     supabase
       .from("eficto_waitlist")
-      .select("id, party_size, location, status, joined_at, occasion, eficto_customers(full_name, phone)")
+      .select("id, party_size, location, status, joined_at, occasion, distance_meters, eficto_customers(full_name, phone)")
       .eq("status", "waiting")
       .order("joined_at", { ascending: true }),
     supabase

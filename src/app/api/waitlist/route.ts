@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "بيانات غير صحيحة" }, { status: 400 });
 
-  const { full_name, phone, party_size, location, occasion } = body as Record<string, unknown>;
+  const { full_name, phone, party_size, location, occasion, distanceMeters } = body as Record<string, unknown>;
 
   if (
     typeof full_name !== "string" ||
@@ -92,10 +92,21 @@ export async function POST(request: Request) {
     }
 
     const occasionValue = typeof occasion === "string" && occasion.trim() ? occasion.trim().slice(0, 100) : null;
+    const distanceValue =
+      typeof distanceMeters === "number" && Number.isFinite(distanceMeters) && distanceMeters >= 0
+        ? Math.round(distanceMeters)
+        : null;
 
     const { data: entry, error } = await supabase
       .from("eficto_waitlist")
-      .insert({ customer_id: customerId, party_size, location, status: "waiting", occasion: occasionValue })
+      .insert({
+        customer_id: customerId,
+        party_size,
+        location,
+        status: "waiting",
+        occasion: occasionValue,
+        distance_meters: distanceValue,
+      })
       .select("id, party_size, location, status, joined_at")
       .single();
 

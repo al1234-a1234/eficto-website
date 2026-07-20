@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { relativeMinutesSince } from "@/lib/format";
 import { waitlistWhatsAppLink } from "@/lib/whatsapp";
+import { formatDistanceAr } from "@/lib/distance";
 import { LONG_SEAT_ALERT_MINUTES } from "@/lib/analytics";
 
 export interface WaitlistRow {
@@ -13,6 +14,7 @@ export interface WaitlistRow {
   status: "waiting" | "seated" | "left" | "completed";
   joined_at: string;
   occasion: string | null;
+  distance_meters: number | null;
   eficto_customers: { full_name: string; phone: string } | null;
 }
 
@@ -48,7 +50,9 @@ export function WaitlistManager({
         const [{ data: waiting }, { data: seatedData }] = await Promise.all([
           supabase
             .from("eficto_waitlist")
-            .select("id, party_size, location, status, joined_at, occasion, eficto_customers(full_name, phone)")
+            .select(
+              "id, party_size, location, status, joined_at, occasion, distance_meters, eficto_customers(full_name, phone)"
+            )
             .eq("status", "waiting")
             .order("joined_at", { ascending: true }),
           supabase
@@ -151,6 +155,15 @@ export function WaitlistManager({
                   <div className="text-left text-sm text-eficto-green-dark/60">
                     <p>{row.party_size} أشخاص</p>
                     <p className="text-xs">منذ {relativeMinutesSince(row.joined_at)} دقيقة</p>
+                    <p
+                      className={`text-xs ${
+                        row.distance_meters !== null && row.distance_meters > 5000
+                          ? "text-eficto-alert"
+                          : "text-eficto-green-dark/40"
+                      }`}
+                    >
+                      {row.distance_meters !== null ? `يبعد ${formatDistanceAr(row.distance_meters)}` : "الموقع غير محدد"}
+                    </p>
                   </div>
                   {row.eficto_customers?.phone && (
                     <a

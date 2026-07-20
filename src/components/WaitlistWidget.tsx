@@ -37,30 +37,32 @@ export function WaitlistWidget() {
   const [occasion, setOccasion] = useState("");
   const [locationPerm, setLocationPerm] = useState<LocationPermState>("idle");
   const [distance, setDistance] = useState<string | null>(null);
+  const [distanceMeters, setDistanceMeters] = useState<number | null>(null);
 
   /**
    * Location is only requested when the customer actually submits the join form —
    * never on page load. Firing getCurrentPosition from a real user action (the submit
    * click) is also what makes the browser permission prompt behave reliably.
    */
-  function requestLocation(): Promise<boolean> {
+  function requestLocation(): Promise<number | null> {
     return new Promise((resolve) => {
       if (!navigator.geolocation) {
         setLocationPerm("denied");
-        resolve(false);
+        resolve(null);
         return;
       }
       setLocationPerm("checking");
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const meters = haversineMeters(pos.coords.latitude, pos.coords.longitude, SITE.lat, SITE.lng);
+          const meters = Math.round(haversineMeters(pos.coords.latitude, pos.coords.longitude, SITE.lat, SITE.lng));
           setDistance(formatDistanceAr(meters));
+          setDistanceMeters(meters);
           setLocationPerm("granted");
-          resolve(true);
+          resolve(meters);
         },
         () => {
           setLocationPerm("denied");
-          resolve(false);
+          resolve(null);
         },
         { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
       );
@@ -76,7 +78,13 @@ export function WaitlistWidget() {
     const stored = safeGetItem(STORAGE_KEY);
     if (stored) {
       try {
-        setMyEntry(JSON.parse(stored));
+        const entry = JSON.parse(stored) as MyEntry;
+        setMyEntry(entry);
+        // Subscribing only happened on a fresh join — anyone whose entry was restored here
+        // (returning visit, or already waiting before push notifications existed) never got
+        // subscribed at all. Re-running this is harmless: the browser reuses the existing
+        // subscription instead of prompting again once permission is already granted.
+        subscribeToPushNotifications(entry.id);
       } catch {
         safeRemoveItem(STORAGE_KEY);
       }
@@ -141,10 +149,12 @@ export function WaitlistWidget() {
     setFormStatus("submitting");
     setError(null);
 
-    // Location is best-effort only (for the "تبعد عنك تقريباً" distance display) and must
-    // never block joining — a denied/failed/slow GPS fix should never stop a real booking.
+    // Location is best-effort only (for the "تبعد عنك تقريباً" distance display, and so staff
+    // can spot someone joining the queue from far away) and must never block joining — a
+    // denied/failed/slow GPS fix should never stop a real booking.
+    let currentDistanceMeters = distanceMeters;
     if (locationPerm !== "granted") {
-      await requestLocation();
+      currentDistanceMeters = await requestLocation();
     }
 
     const payload = {
@@ -153,6 +163,7 @@ export function WaitlistWidget() {
       party_size: partySize,
       location,
       occasion: occasion.trim() || null,
+      distanceMeters: currentDistanceMeters,
     };
 
     try {

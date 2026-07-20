@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatArabicTime, relativeMinutesSince } from "@/lib/format";
 import { reservationWhatsAppLink, waitlistWhatsAppLink } from "@/lib/whatsapp";
+import { formatDistanceAr } from "@/lib/distance";
 import { LONG_SEAT_ALERT_MINUTES } from "@/lib/analytics";
 
 type Customer = { full_name: string; phone: string } | null;
@@ -13,6 +14,7 @@ type WaitlistRow = {
   location: "indoor" | "outdoor" | "any";
   joined_at: string;
   occasion: string | null;
+  distance_meters: number | null;
   eficto_customers: Customer;
 };
 
@@ -151,6 +153,15 @@ export function StaffQueueView() {
                   <div className="text-left text-sm text-eficto-green-dark/60">
                     <p>{row.party_size} أشخاص</p>
                     <p className="text-xs">منذ {relativeMinutesSince(row.joined_at)} دقيقة</p>
+                    <p
+                      className={`text-xs ${
+                        row.distance_meters !== null && row.distance_meters > 5000
+                          ? "text-eficto-alert"
+                          : "text-eficto-green-dark/40"
+                      }`}
+                    >
+                      {row.distance_meters !== null ? `يبعد ${formatDistanceAr(row.distance_meters)}` : "الموقع غير محدد"}
+                    </p>
                   </div>
                   {row.eficto_customers?.phone && (
                     <a
