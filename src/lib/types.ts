@@ -64,6 +64,29 @@ export interface MenuCategory {
   created_at: string;
 }
 
+export interface StaffPermissions {
+  queue: boolean;
+  customers: boolean;
+  reviews: boolean;
+  reports: boolean;
+}
+
+export interface PermissionGroup {
+  id: string;
+  name: string;
+  permissions: StaffPermissions;
+  created_at: string;
+}
+
+export interface StaffMember {
+  id: string;
+  full_name: string;
+  permission_group_id: string;
+  active: boolean;
+  last_login_at: string | null;
+  created_at: string;
+}
+
 export interface MenuItem {
   id: string;
   category_id: string;

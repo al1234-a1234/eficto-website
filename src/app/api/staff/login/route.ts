@@ -1,25 +1,28 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { hashPin, STAFF_COOKIE } from "@/lib/staffAuth";
+import { hashPin, sessionCookieValue, STAFF_COOKIE } from "@/lib/staffAuth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
+  const staffId = body && typeof body.staffId === "string" ? body.staffId : "";
   const pin = body && typeof body.pin === "string" ? body.pin.trim() : "";
-  if (!pin) return NextResponse.json({ error: "أدخل الرمز" }, { status: 400 });
+  if (!staffId || !pin) return NextResponse.json({ error: "اختر اسمك وأدخل الرمز" }, { status: 400 });
 
   const supabase = createAdminClient();
   const { data } = await supabase
-    .from("eficto_settings")
-    .select("value")
-    .eq("key", "staff_pin")
+    .from("eficto_staff_members")
+    .select("id, pin_hash, active")
+    .eq("id", staffId)
     .maybeSingle();
 
-  if (!data || data.value !== pin) {
-    return NextResponse.json({ error: "رمز غير صحيح" }, { status: 401 });
+  if (!data || !data.active || data.pin_hash !== hashPin(data.id, pin)) {
+    return NextResponse.json({ error: "الاسم أو الرمز غير صحيح" }, { status: 401 });
   }
 
+  await supabase.from("eficto_staff_members").update({ last_login_at: new Date().toISOString() }).eq("id", data.id);
+
   const res = NextResponse.json({ ok: true });
-  res.cookies.set(STAFF_COOKIE, hashPin(pin), {
+  res.cookies.set(STAFF_COOKIE, sessionCookieValue(data.id), {
     httpOnly: true,
     secure: true,
     sameSite: "lax",

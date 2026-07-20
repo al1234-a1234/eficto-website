@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isStaffAuthenticated } from "@/lib/staffAuth";
+import { getStaffSession } from "@/lib/staffAuth";
 
 export async function PATCH(request: Request) {
-  if (!(await isStaffAuthenticated())) {
+  const session = await getStaffSession();
+  if (!session?.permissions.queue) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 

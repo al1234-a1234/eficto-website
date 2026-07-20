@@ -163,6 +163,16 @@ export function ArrowUpIcon({ className }: { className?: string }) {
   );
 }
 
+export function IdCardIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <rect x="3" y="5.5" width="18" height="13" rx="2.2" />
+      <circle cx="8.3" cy="11" r="1.9" />
+      <path d="M5.5 15.6c.5-1.4 1.5-2.1 2.8-2.1s2.3.7 2.8 2.1M14 9.5h4M14 12.5h4M14 15.5h2.5" />
+    </svg>
+  );
+}
+
 export function ArrowDownIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">

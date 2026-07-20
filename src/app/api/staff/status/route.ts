@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isStaffAuthenticated } from "@/lib/staffAuth";
+import { getStaffSession } from "@/lib/staffAuth";
 
 const ALLOWED = ["available", "busy", "full"];
 
 export async function POST(request: Request) {
-  if (!(await isStaffAuthenticated())) {
+  const session = await getStaffSession();
+  if (!session?.permissions.queue) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 
