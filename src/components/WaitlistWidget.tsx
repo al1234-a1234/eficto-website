@@ -162,7 +162,7 @@ export function WaitlistWidget() {
       });
       const data = await res.json();
 
-      if (res.status === 201) {
+      if (res.status === 201 || res.status === 200) {
         const entry: MyEntry = {
           id: data.entry.id,
           joined_at: data.entry.joined_at,

@@ -70,15 +70,25 @@ export async function POST(request: Request) {
       );
     }
 
+    // If they're already waiting (e.g. their browser lost track of it — a different device,
+    // a cleared cache), recover their real entry instead of dead-ending on an error: from
+    // their side, "already registered" should look identical to a fresh, successful join.
     const { data: alreadyWaiting } = await supabase
       .from("eficto_waitlist")
-      .select("id")
+      .select("id, party_size, location, status, joined_at")
       .eq("status", "waiting")
       .eq("customer_id", customerId)
       .maybeSingle();
 
     if (alreadyWaiting) {
-      return NextResponse.json({ error: "أنت بالفعل ضمن قائمة الانتظار" }, { status: 409 });
+      const { count: existingPosition } = await supabase
+        .from("eficto_waitlist")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "waiting")
+        .eq("location", alreadyWaiting.location)
+        .lte("joined_at", alreadyWaiting.joined_at);
+
+      return NextResponse.json({ entry: alreadyWaiting, position: existingPosition ?? 1 }, { status: 200 });
     }
 
     const occasionValue = typeof occasion === "string" && occasion.trim() ? occasion.trim().slice(0, 100) : null;
