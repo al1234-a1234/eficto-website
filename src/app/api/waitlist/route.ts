@@ -32,9 +32,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "الرجاء التحقق من البيانات" }, { status: 400 });
   }
 
-  if (!isWithinOperatingHours(currentRiyadhTimeString())) {
-    return NextResponse.json({ error: "المطعم مغلق حالياً — ساعات العمل يومياً ٥:٠٠ م — ٢:٣٠ ص" }, { status: 409 });
-  }
+  // Operating-hours check temporarily disabled for the testing period at the owner's request —
+  // re-enable by restoring the block below once testing is done.
+  // if (!isWithinOperatingHours(currentRiyadhTimeString())) {
+  //   return NextResponse.json({ error: "المطعم مغلق حالياً — ساعات العمل يومياً ٥:٠٠ م — ٢:٣٠ ص" }, { status: 409 });
+  // }
 
   try {
     const supabase = createAdminClient();
