@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
 
   if (request.nextUrl.pathname === "/") {
     if (isLinksOnlyHost) {
-      return NextResponse.redirect(new URL("/links", request.url));
+      return NextResponse.rewrite(new URL("/links", request.url));
     }
     return NextResponse.next();
   }
