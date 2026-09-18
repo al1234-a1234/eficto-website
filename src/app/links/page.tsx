@@ -16,7 +16,7 @@ const LOCATION_URL = "https://maps.app.goo.gl/XG99zpnxE1FeCHWA7?g_st=ic";
 
 const LINKS: { href: string; labelEn?: string; labelAr: string }[] = [
   { href: LOCATION_URL, labelEn: "LOCATION", labelAr: "الموقع" },
-  { href: MENU_URL, labelEn: "MENU", labelAr: "القائمة" },
+  { href: MENU_URL, labelEn: "MENU", labelAr: "قائمة الطعام" },
   { href: REQUEUE_URL, labelAr: "قائمة الانتظار ريكيو" },
   { href: SITE.instagram, labelEn: "INSTAGRAM", labelAr: "انستقرام" },
   { href: RESERVATION_WHATSAPP, labelAr: "اقتراحاتكم | ملاحظاتكم" },
