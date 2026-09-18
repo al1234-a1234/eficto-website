@@ -43,21 +43,21 @@ export default function LinksPage() {
 
         <h1 className="mt-5 font-arabic-display text-2xl font-semibold text-eficto-ivory">افيكتو</h1>
 
-        <nav className="mt-8 flex w-full flex-col gap-5" aria-label="روابط افيكتو">
+        <nav className="mt-8 flex w-full flex-col gap-3" aria-label="روابط افيكتو">
           {LINKS.map(({ href, labelEn, labelAr }, i) => (
             <a
               key={`${href}-${i}`}
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center rounded-full border-2 border-eficto-cream bg-eficto-green-deep/40 px-6 py-4 text-center font-arabic-display text-[15px] font-bold text-eficto-cream shadow-premium backdrop-blur-sm transition-colors duration-300 ease-soft hover:bg-eficto-cream hover:text-eficto-green-dark"
+              className="flex h-12 w-full items-center justify-center rounded-full border-2 border-eficto-cream bg-eficto-green-deep/40 px-4 text-center font-arabic-display text-[13px] font-bold text-eficto-cream shadow-premium backdrop-blur-sm transition-colors duration-300 ease-soft hover:bg-eficto-cream hover:text-eficto-green-dark"
             >
               {labelEn ? (
-                <span>
+                <span className="truncate">
                   <span dir="ltr">{labelEn}</span> | {labelAr}
                 </span>
               ) : (
-                <span>{labelAr}</span>
+                <span className="truncate">{labelAr}</span>
               )}
             </a>
           ))}
