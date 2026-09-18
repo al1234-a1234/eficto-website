@@ -15,10 +15,9 @@ const MENU_URL =
 const LOCATION_URL = "https://maps.app.goo.gl/XG99zpnxE1FeCHWA7?g_st=ic";
 
 const LINKS: { href: string; labelEn?: string; labelAr: string }[] = [
-  { href: RESERVATION_WHATSAPP, labelEn: "FOR RESERVATION", labelAr: "للحجز" },
   { href: LOCATION_URL, labelEn: "LOCATION", labelAr: "الموقع" },
   { href: MENU_URL, labelEn: "MENU", labelAr: "القائمة" },
-  { href: REQUEUE_URL, labelEn: "REQUEUE", labelAr: "ريكيو" },
+  { href: REQUEUE_URL, labelAr: "قائمة الانتظار ريكيو" },
   { href: SITE.instagram, labelEn: "INSTAGRAM", labelAr: "انستقرام" },
   { href: RESERVATION_WHATSAPP, labelAr: "اقتراحاتكم | ملاحظاتكم" },
   { href: RESERVATION_WHATSAPP, labelAr: "طلبات الإمتياز التجاري" },
@@ -42,7 +41,9 @@ export default function LinksPage() {
           <Image src="/logo/badge-circle.png" alt="افيكتو" fill className="object-cover" priority />
         </div>
 
-        <nav className="mt-10 flex w-full flex-col gap-5" aria-label="روابط افيكتو">
+        <h1 className="mt-5 font-arabic-display text-2xl font-semibold text-eficto-ivory">افيكتو</h1>
+
+        <nav className="mt-8 flex w-full flex-col gap-5" aria-label="روابط افيكتو">
           {LINKS.map(({ href, labelEn, labelAr }, i) => (
             <a
               key={`${href}-${i}`}
