@@ -26,16 +26,26 @@ const LINKS: { href: string; labelEn?: string; labelAr: string }[] = [
 
 export default function LinksPage() {
   return (
-    <div className="min-h-screen bg-eficto-cream">
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 py-14">
-        <div className="relative h-24 w-24 overflow-hidden rounded-full bg-eficto-green shadow-elegant ring-1 ring-eficto-gold/40">
-          <Image src="/logo/icon-white.png" alt="افيكتو" fill className="object-contain p-3" priority />
+    <div className="relative min-h-screen">
+      <Image
+        src="/images/interior-arch.jpg"
+        alt=""
+        fill
+        priority
+        className="object-cover"
+        sizes="100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-eficto-green-deep/80 via-eficto-green-deep/70 to-eficto-green-deep/90" />
+
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 py-14">
+        <div className="relative h-28 w-28 overflow-hidden rounded-full shadow-elegant ring-2 ring-eficto-gold/50">
+          <Image src="/logo/badge-circle.png" alt="افيكتو" fill className="object-cover" priority />
         </div>
 
-        <h1 className="mt-5 font-arabic-display text-2xl font-semibold text-eficto-green-dark">
+        <h1 className="mt-5 font-arabic-display text-2xl font-semibold text-eficto-ivory">
           {SITE.nameAr}
         </h1>
-        <p dir="ltr" className="mt-1 text-sm tracking-wide text-eficto-green-dark/60">
+        <p dir="ltr" className="mt-1 text-sm tracking-wide text-eficto-cream/70">
           {SITE.nameEn}
         </p>
 
@@ -46,7 +56,7 @@ export default function LinksPage() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center rounded-full border-2 border-eficto-green px-6 py-4 text-center font-arabic-display text-[15px] font-bold text-eficto-green transition-colors duration-300 ease-soft hover:bg-eficto-green hover:text-eficto-cream"
+              className="flex items-center justify-center rounded-full border-2 border-eficto-cream bg-eficto-green-deep/40 px-6 py-4 text-center font-arabic-display text-[15px] font-bold text-eficto-cream shadow-premium backdrop-blur-sm transition-colors duration-300 ease-soft hover:bg-eficto-cream hover:text-eficto-green-dark"
             >
               {labelEn ? (
                 <span>
@@ -60,12 +70,12 @@ export default function LinksPage() {
         </nav>
 
         <div className="mt-12 flex w-full items-center gap-4">
-          <span className="h-px flex-1 bg-eficto-green/30" />
-          <Image src="/logo/icon-green.png" alt="" width={22} height={22} className="opacity-70" />
-          <span className="h-px flex-1 bg-eficto-green/30" />
+          <span className="h-px flex-1 bg-eficto-cream/30" />
+          <Image src="/logo/icon-white.png" alt="" width={22} height={22} className="opacity-80" />
+          <span className="h-px flex-1 bg-eficto-cream/30" />
         </div>
 
-        <p className="mt-10 text-xs text-eficto-green-dark/40">افيكتو © {new Date().getFullYear()}</p>
+        <p className="mt-10 text-xs text-eficto-cream/50">افيكتو © {new Date().getFullYear()}</p>
       </div>
     </div>
   );
