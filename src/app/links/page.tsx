@@ -35,19 +35,12 @@ export default function LinksPage() {
         className="object-cover"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-eficto-green-deep/80 via-eficto-green-deep/70 to-eficto-green-deep/90" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/35 to-black/70" />
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 py-14">
-        <div className="relative h-28 w-28 overflow-hidden rounded-full shadow-elegant ring-2 ring-eficto-gold/50">
+        <div className="relative h-28 w-28 overflow-hidden rounded-full shadow-elegant">
           <Image src="/logo/badge-circle.png" alt="افيكتو" fill className="object-cover" priority />
         </div>
-
-        <h1 className="mt-5 font-arabic-display text-2xl font-semibold text-eficto-ivory">
-          {SITE.nameAr}
-        </h1>
-        <p dir="ltr" className="mt-1 text-sm tracking-wide text-eficto-cream/70">
-          {SITE.nameEn}
-        </p>
 
         <nav className="mt-10 flex w-full flex-col gap-5" aria-label="روابط افيكتو">
           {LINKS.map(({ href, labelEn, labelAr }, i) => (
